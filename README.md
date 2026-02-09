@@ -52,8 +52,6 @@ mkDropZone = component "DropZone" \_ -> Hooks.do
   pure $ R.div { ref, children: [ R.text if isDropTarget then "Drop here!" else "Drop zone" ] }
 ```
 
-Components that accept children (`dragDropProvider`, `dragOverlay`) take them as a second argument. The children argument accepts anything with an `IsJSX` instance: `JSX`, `String`, or `Array JSX`.
-
 All config props are optional (except `id`). Pass only what you need:
 
 ```purescript
