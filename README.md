@@ -23,12 +23,9 @@ npm install @dnd-kit/react@^0.2.4 @dnd-kit/dom@^0.2.4 @dnd-kit/abstract@^0.2.4 @
 ## Quick start
 
 ```purescript
-module Example where
-
-import Prelude
 import React.Basic.Hooks (component)
 import React.Basic.Hooks as Hooks
-import React.Basic.DOM as R
+import Yoga.React.DOM.HTML (div, button, p)
 import React.DndKit (dragDropProvider)
 import React.DndKit.Hooks (useDraggable, useDroppable)
 import React.DndKit.Sensors (pointerSensorDefault)
@@ -40,16 +37,19 @@ mkApp = component "App" \_ -> Hooks.do
     { sensors: [ pointerSensorDefault ]
     , plugins: [ feedback, preventSelection ]
     }
-    [ -- your draggable and droppable components
+    [ mkDraggableItem {}
+    , mkDropZone {}
     ]
 
 mkDraggableItem = component "DraggableItem" \_ -> Hooks.do
   { ref, handleRef } <- useDraggable { id: DraggableId "item-1" }
-  pure $ R.div { ref, children: [ R.text "Drag me" ] }
+  pure $ div { ref, className: "card" } do
+    button { ref: handleRef } "Grab here"
 
 mkDropZone = component "DropZone" \_ -> Hooks.do
   { ref, isDropTarget } <- useDroppable { id: DroppableId "zone-1" }
-  pure $ R.div { ref, children: [ R.text if isDropTarget then "Drop here!" else "Drop zone" ] }
+  pure $ div { ref } do
+    p {} if isDropTarget then "Drop here!" else "Drop zone"
 ```
 
 All config props are optional (except `id`). Pass only what you need:
@@ -75,34 +75,6 @@ useDraggable { id: DraggableId "a", type: DragType "card", feedback: clone, disa
 | `React.DndKit.Collision` | `defaultCollisionDetection`, `closestCenter`, `closestCorners`, `pointerIntersection`, `shapeIntersection`, `directionBiased`, `pointerDistance` |
 | `React.DndKit.Helpers` | `move`, `swap`, `arrayMove`, `arraySwap` |
 | `React.DndKit.Types` | `DraggableId`, `DroppableId`, `DragType`, `FeedbackType` (`move`, `clone`, `noFeedback`), `CallbackRef`, `Coordinates`, `DragOperationSnapshot`, event types, opaque types |
-
-## With yoga-react-dom
-
-This library uses `IsJSX` from [yoga-react-dom](https://pursuit.purescript.org/packages/purescript-yoga-react-dom), so it integrates naturally:
-
-```purescript
-import Yoga.React.DOM.HTML (div, p, button)
-import React.DndKit (dragDropProvider)
-import React.DndKit.Hooks (useDraggable, useDroppable)
-import React.DndKit.Types (DraggableId(..), DroppableId(..))
-
-mkApp = component "App" \_ -> Hooks.do
-  pure $ dragDropProvider {} do
-    div { className: "container" }
-      [ mkDraggableCard {}
-      , mkDropZone {}
-      ]
-
-mkDraggableCard = component "DraggableCard" \_ -> Hooks.do
-  { ref, handleRef } <- useDraggable { id: DraggableId "card-1" }
-  pure $ div { ref, className: "card" } do
-    button { ref: handleRef } "Grab here"
-
-mkDropZone = component "DropZone" \_ -> Hooks.do
-  { ref, isDropTarget } <- useDroppable { id: DroppableId "zone-1" }
-  pure $ div { ref } do
-    p {} if isDropTarget then "Drop here!" else "Drop zone"
-```
 
 ## Sortable lists
 
