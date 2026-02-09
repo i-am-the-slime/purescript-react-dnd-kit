@@ -26,24 +26,14 @@ module React.DndKit.Types
   , DroppableInstance
   , SortableInstance
   , DndEffect
-  , class IsJSX
   ) where
 
 import Prelude
 
 import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype)
-import React.Basic (JSX)
-import Type.Equality (class TypeEquals)
 import Web.DOM (Element)
 import Web.Event.Event (Event)
-
-class IsJSX :: Type -> Constraint
-class IsJSX a
-
-instance IsJSX JSX
-instance IsJSX String
-instance (TypeEquals a JSX) => IsJSX (Array a)
 
 -- | 2D coordinates
 type Coordinates = { x :: Number, y :: Number }

@@ -15,7 +15,8 @@ import Foreign (Foreign)
 import Prim.Row as Row
 import React.Basic (JSX, ReactComponent)
 import React.DndKit.Internal (wrapHandlers_)
-import React.DndKit.Types (class IsJSX, CollisionEvent, DragDropManager, DragEndEvent, DragMoveEvent, DragOverEvent, DragStartEvent, Modifier, Plugin, Sensor)
+import React.DndKit.Types (CollisionEvent, DragDropManager, DragEndEvent, DragMoveEvent, DragOverEvent, DragStartEvent, Modifier, Plugin, Sensor)
+import Yoga.React.DOM.Internal (class IsJSX)
 
 foreign import createElementImpl :: forall component props children. Fn3 component props children JSX
 
