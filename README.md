@@ -79,34 +79,65 @@ useDraggable { id: DraggableId "a", type: DragType "card", feedback: clone, disa
 | `React.DndKit.Helpers` | `move`, `swap`, `arrayMove`, `arraySwap` |
 | `React.DndKit.Types` | `DraggableId`, `DroppableId`, `DragType`, `FeedbackType` (`move`, `clone`, `noFeedback`), `CallbackRef`, `Coordinates`, `DragOperationSnapshot`, event types, opaque types |
 
-## Sortable lists
+## Sortable list example
+
+A complete sortable list that reorders items on drag:
 
 ```purescript
-import React.DndKit.Sortable (useSortable, SortableId(..))
-import React.DndKit.Helpers (move)
+import Prelude
+import Data.Array (findIndex, mapWithIndex)
+import Data.Maybe (fromMaybe)
+import Data.Newtype (un)
+import Data.Tuple.Nested ((/\))
+import React.Basic (JSX)
+import React.Basic.Hooks as React
+import Yoga.React (component)
+import Yoga.React.DOM.HTML (div)
+import React.DndKit (dragDropProvider)
+import React.DndKit.Sortable (SortableId(..), useSortable)
+import React.DndKit.Sensors (pointerSensorDefault)
+import React.DndKit.Plugins (feedback)
+import React.DndKit.Helpers (arrayMove)
+import React.DndKit.Types (DraggableId(..), DroppableId(..))
+
+sortableList :: {} -> JSX
+sortableList = component "SortableList" \_ -> React.do
+  items /\ setItems <- React.useState [ "Apples", "Bananas", "Oranges", "Mangoes" ]
+  let
+    reorder event _ = do
+      let src = event.operation.source >>= \s -> findIndex (_ == un DraggableId s.id) items
+      let tgt = event.operation.target >>= \t -> findIndex (_ == un DroppableId t.id) items
+      case src, tgt of
+        Just from, Just to -> setItems \_ -> arrayMove items from to
+        _, _ -> pure unit
+  pure $ dragDropProvider
+    { sensors: [ pointerSensorDefault ]
+    , plugins: [ feedback ]
+    , onDragOver: reorder
+    }
+    (items # mapWithIndex \index item ->
+      sortableItem { id: item, index }
+    )
 
 sortableItem :: { id :: String, index :: Int } -> JSX
 sortableItem = component "SortableItem" \{ id, index } -> React.do
   { ref } <- useSortable { id: SortableId id, index }
-  pure $ div { ref } id
+  pure $ div { ref, className: "sortable-item" } id
 ```
-
-Use `move` or `swap` from `React.DndKit.Helpers` in your `onDragOver`/`onDragEnd` handlers to reorder items.
 
 ## Event handlers
 
-All event handlers receive the event and the `DragDropManager`, curried:
+All event handlers receive the event and the `DragDropManager`:
 
 ```purescript
 dragDropProvider
   { sensors: [ pointerSensorDefault ]
   , plugins: [ feedback ]
-  , onDragStart: \event manager -> do
-      log $ "Drag started from: " <> show event.operation.source
-  , onDragEnd: \event manager -> do
+  , onDragStart: \event _manager ->
+      log $ "Drag started"
+  , onDragEnd: \event _manager ->
       when (not event.canceled) do
-        -- reorder your state
-        pure unit
+        log $ "Drag ended"
   }
   [ -- children
   ]
