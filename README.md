@@ -8,85 +8,19 @@ PureScript bindings for [dnd-kit](https://dndkit.com/) (experimental `v0.2.x` br
 
 ## Installation
 
-Install the PureScript package:
-
 ```
 spago install react-dnd-kit
 ```
-
-Install the required npm packages:
 
 ```
 npm install @dnd-kit/react@^0.2.4 @dnd-kit/dom@^0.2.4 @dnd-kit/abstract@^0.2.4 @dnd-kit/collision@^0.2.4 @dnd-kit/helpers@^0.2.4
 ```
 
-## Quick start
-
-```purescript
-import React.Basic.Hooks as React
-import Yoga.React (component)
-import Yoga.React.DOM.HTML (div, button, p)
-import React.DndKit (dragDropProvider)
-import React.DndKit.Hooks (useDraggable, useDroppable)
-import React.DndKit.Sensors (pointerSensorDefault)
-import React.DndKit.Plugins (feedback, preventSelection)
-import React.DndKit.Types (DraggableId(..), DroppableId(..))
-
-app :: {} -> JSX
-app = component "App" \_ -> React.do
-  pure $ dragDropProvider
-    { sensors: [ pointerSensorDefault ]
-    , plugins: [ feedback, preventSelection ]
-    }
-    [ draggableItem {}
-    , dropZone {}
-    ]
-
-draggableItem :: {} -> JSX
-draggableItem = component "DraggableItem" \_ -> React.do
-  { ref, handleRef } <- useDraggable { id: DraggableId "item-1" }
-  pure $ div { ref, className: "card" } do
-    button { ref: handleRef } "Grab here"
-
-dropZone :: {} -> JSX
-dropZone = component "DropZone" \_ -> React.do
-  { ref, isDropTarget } <- useDroppable { id: DroppableId "zone-1" }
-  pure $ div { ref } do
-    p {} if isDropTarget then "Drop here!" else "Drop zone"
-```
-
-All config props are optional (except `id`). Pass only what you need:
-
-```purescript
--- minimal
-useDraggable { id: DraggableId "a" }
-
--- with options
-useDraggable { id: DraggableId "a", type: DragType "card", feedback: clone, disabled: true, data: { color: "red" } }
-```
-
-## Modules
-
-| Module | Exports |
-|---|---|
-| `React.DndKit` | `dragDropProvider`, `dragDropProvider_`, `dragOverlay`, `dragOverlay_` |
-| `React.DndKit.Hooks` | `useDraggable`, `useDroppable`, `useDragDropMonitor`, `useDragOperation` |
-| `React.DndKit.Sortable` | `useSortable`, `SortableId` |
-| `React.DndKit.Sensors` | `pointerSensor`, `keyboardSensor`, `distanceConstraint`, `delayConstraint` |
-| `React.DndKit.Plugins` | `accessibility`, `autoScroller`, `cursor`, `feedback`, `preventSelection` |
-| `React.DndKit.Modifiers` | `restrictToVerticalAxis`, `restrictToHorizontalAxis`, `restrictToWindow`, `restrictToElement`, `snap` |
-| `React.DndKit.Collision` | `defaultCollisionDetection`, `closestCenter`, `closestCorners`, `pointerIntersection`, `shapeIntersection`, `directionBiased`, `pointerDistance` |
-| `React.DndKit.Helpers` | `move`, `swap`, `arrayMove`, `arraySwap` |
-| `React.DndKit.Types` | `DraggableId`, `DroppableId`, `DragType`, `FeedbackType` (`move`, `clone`, `noFeedback`), `CallbackRef`, `Coordinates`, `DragOperationSnapshot`, event types, opaque types |
-
-## Sortable list example
-
-A complete sortable list that reorders items on drag:
+## Sortable list
 
 ```purescript
 import Prelude
 import Data.Array (findIndex, mapWithIndex)
-import Data.Maybe (fromMaybe)
 import Data.Newtype (un)
 import Data.Tuple.Nested ((/\))
 import React.Basic (JSX)
@@ -125,9 +59,61 @@ sortableItem = component "SortableItem" \{ id, index } -> React.do
   pure $ div { ref, className: "sortable-item" } id
 ```
 
-## Event handlers
+## Drag and drop
 
-All event handlers receive the event and the `DragDropManager`:
+```purescript
+import React.Basic.Hooks as React
+import Yoga.React (component)
+import Yoga.React.DOM.HTML (div, button, p)
+import React.DndKit (dragDropProvider)
+import React.DndKit.Hooks (useDraggable, useDroppable)
+import React.DndKit.Sensors (pointerSensorDefault)
+import React.DndKit.Plugins (feedback, preventSelection)
+import React.DndKit.Types (DraggableId(..), DroppableId(..))
+
+app :: {} -> JSX
+app = component "App" \_ -> React.do
+  pure $ dragDropProvider
+    { sensors: [ pointerSensorDefault ]
+    , plugins: [ feedback, preventSelection ]
+    }
+    [ draggableCard {}
+    , dropZone {}
+    ]
+
+draggableCard :: {} -> JSX
+draggableCard = component "DraggableCard" \_ -> React.do
+  { ref, handleRef } <- useDraggable { id: DraggableId "item-1" }
+  pure $ div { ref, className: "card" } do
+    button { ref: handleRef } "Grab here"
+
+dropZone :: {} -> JSX
+dropZone = component "DropZone" \_ -> React.do
+  { ref, isDropTarget } <- useDroppable { id: DroppableId "zone-1" }
+  pure $ div { ref } do
+    p {} if isDropTarget then "Drop here!" else "Drop zone"
+```
+
+## Type matching
+
+```purescript
+import React.DndKit.Types (DragType(..))
+
+-- only "card" draggables can be dropped on "card" droppables
+useDraggable { id: DraggableId "a", type: DragType "card" }
+useDroppable { id: DroppableId "b", type: DragType "card" }
+```
+
+## Feedback
+
+```purescript
+import React.DndKit.Types (move, clone, noFeedback)
+
+useSortable { id: SortableId "s", index: 0, feedback: move }
+useSortable { id: SortableId "t", index: 1, feedback: clone }
+```
+
+## Event handlers
 
 ```purescript
 dragDropProvider
@@ -135,6 +121,8 @@ dragDropProvider
   , plugins: [ feedback ]
   , onDragStart: \event _manager ->
       log $ "Drag started"
+  , onDragOver: \event _manager ->
+      pure unit
   , onDragEnd: \event _manager ->
       when (not event.canceled) do
         log $ "Drag ended"
@@ -143,32 +131,109 @@ dragDropProvider
   ]
 ```
 
-## Type safety
-
-Draggable, droppable, and sortable IDs are distinct newtypes and cannot be mixed:
+## Sensors
 
 ```purescript
-DraggableId "x" :: DraggableId  -- for useDraggable
-DroppableId "y" :: DroppableId  -- for useDroppable
-SortableId  "z" :: SortableId   -- for useSortable
+import React.DndKit.Sensors (pointerSensor, keyboardSensor, distanceConstraint, delayConstraint)
+
+-- with activation constraints
+dragDropProvider
+  { sensors:
+      [ pointerSensor { activationConstraints: distanceConstraint { value: 5.0 } }
+      , keyboardSensor {}
+      ]
+  }
+  [ -- children
+  ]
 ```
 
-`DragType` is a newtype over `String` for type/accept matching between draggables and droppables:
+## Modifiers
 
 ```purescript
-useDraggable { id: DraggableId "a", type: DragType "card" }
-useDroppable { id: DroppableId "b", type: DragType "card" }
+import React.DndKit.Modifiers (restrictToVerticalAxis, restrictToWindow, snap)
+
+dragDropProvider { modifiers: [ restrictToVerticalAxis, restrictToWindow ] }
+  [ -- children
+  ]
+
+-- per-draggable modifiers
+useDraggable { id: DraggableId "a", modifiers: [ snap 20.0 ] }
 ```
 
-`FeedbackType` controls the visual feedback strategy during drag. It is opaque with smart constructors:
+## Collision detection
 
 ```purescript
-import React.DndKit.Types (move, clone, noFeedback)
+import React.DndKit.Collision (closestCenter, pointerIntersection)
 
-useSortable { id: SortableId "s", index: 0, feedback: move }
+useDroppable { id: DroppableId "a", collisionDetector: closestCenter }
+useSortable { id: SortableId "b", index: 0, collisionDetector: pointerIntersection }
 ```
 
-Hook results return opaque `CallbackRef` values. Pass them as `ref` props on your DOM elements.
+## Drag overlay
+
+```purescript
+import React.DndKit (dragOverlay, dragOverlay_)
+
+dragOverlay { className: "overlay" } do
+  div {} "I'm floating!"
+
+dragOverlay_ "Just text"
+```
+
+## Monitoring
+
+```purescript
+import React.DndKit.Hooks (useDragDropMonitor, useDragOperation)
+
+monitor :: {} -> JSX
+monitor = component "Monitor" \_ -> React.do
+  useDragDropMonitor
+    { onDragStart: \event _manager -> log "started"
+    , onDragEnd: \event _manager -> log "ended"
+    }
+  op <- useDragOperation
+  pure $ div {} $ "canceled: " <> show op.canceled
+
+```
+
+## All config options
+
+```purescript
+useDraggable
+  { id: DraggableId "d"            -- required
+  , type: DragType "card"
+  , disabled: false
+  , feedback: clone
+  , modifiers: [ restrictToVerticalAxis ]
+  , sensors: [ pointerSensorDefault ]
+  , data: { tag: "hello" }
+  }
+
+useDroppable
+  { id: DroppableId "z"            -- required
+  , type: DragType "card"
+  , disabled: false
+  , collisionDetector: closestCenter
+  , collisionPriority: 10.0
+  , data: { priority: 1 }
+  }
+
+useSortable
+  { id: SortableId "s"             -- required
+  , index: 0                       -- required
+  , group: "cards"
+  , type: DragType "card"
+  , accept: DragType "card"
+  , disabled: false
+  , feedback: move
+  , modifiers: [ restrictToVerticalAxis ]
+  , sensors: [ pointerSensorDefault ]
+  , collisionDetector: closestCenter
+  , collisionPriority: 5.0
+  , transition: { duration: 200.0, easing: "ease", idle: true }
+  , data: { order: 0 }
+  }
+```
 
 ## License
 
