@@ -23,8 +23,8 @@ npm install @dnd-kit/react@^0.2.4 @dnd-kit/dom@^0.2.4 @dnd-kit/abstract@^0.2.4 @
 ## Quick start
 
 ```purescript
-import React.Basic.Hooks (component)
-import React.Basic.Hooks as Hooks
+import React.Basic.Hooks as React
+import Yoga.React (component)
 import Yoga.React.DOM.HTML (div, button, p)
 import React.DndKit (dragDropProvider)
 import React.DndKit.Hooks (useDraggable, useDroppable)
@@ -32,21 +32,24 @@ import React.DndKit.Sensors (pointerSensorDefault)
 import React.DndKit.Plugins (feedback, preventSelection)
 import React.DndKit.Types (DraggableId(..), DroppableId(..))
 
-mkApp = component "App" \_ -> Hooks.do
+app :: {} -> JSX
+app = component "App" \_ -> React.do
   pure $ dragDropProvider
     { sensors: [ pointerSensorDefault ]
     , plugins: [ feedback, preventSelection ]
     }
-    [ mkDraggableItem {}
-    , mkDropZone {}
+    [ draggableItem {}
+    , dropZone {}
     ]
 
-mkDraggableItem = component "DraggableItem" \_ -> Hooks.do
+draggableItem :: {} -> JSX
+draggableItem = component "DraggableItem" \_ -> React.do
   { ref, handleRef } <- useDraggable { id: DraggableId "item-1" }
   pure $ div { ref, className: "card" } do
     button { ref: handleRef } "Grab here"
 
-mkDropZone = component "DropZone" \_ -> Hooks.do
+dropZone :: {} -> JSX
+dropZone = component "DropZone" \_ -> React.do
   { ref, isDropTarget } <- useDroppable { id: DroppableId "zone-1" }
   pure $ div { ref } do
     p {} if isDropTarget then "Drop here!" else "Drop zone"
@@ -82,9 +85,10 @@ useDraggable { id: DraggableId "a", type: DragType "card", feedback: clone, disa
 import React.DndKit.Sortable (useSortable, SortableId(..))
 import React.DndKit.Helpers (move)
 
-mkSortableItem = component "SortableItem" \{ id, index } -> Hooks.do
-  { ref, handleRef, isDragging } <- useSortable { id: SortableId id, index }
-  pure $ R.div { ref, children: [ R.text id ] }
+sortableItem :: { id :: String, index :: Int } -> JSX
+sortableItem = component "SortableItem" \{ id, index } -> React.do
+  { ref } <- useSortable { id: SortableId id, index }
+  pure $ div { ref } id
 ```
 
 Use `move` or `swap` from `React.DndKit.Helpers` in your `onDragOver`/`onDragEnd` handlers to reorder items.
