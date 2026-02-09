@@ -47,8 +47,7 @@ spec = after_ cleanup do
               , element rawDiv { ref: result.targetRef, "data-testid": "sort-target", children: [] }
               ]
           }
-      { findByTestId } <- render $ dragDropProvider
-        { children: [ mkSortableAll {} ] }
+      { findByTestId } <- render $ dragDropProvider {} [ mkSortableAll {} ]
       _ <- findByTestId "sortable-all"
       _ <- findByTestId "sort-handle"
       _ <- findByTestId "sort-source"
@@ -67,8 +66,7 @@ spec = after_ cleanup do
             <> ":"
             <> show result.isDropping
         pure $ refDiv result.ref "sort-res" [ R.text label ]
-      { findByText } <- render $ dragDropProvider
-        { children: [ mkSortable {} ] }
+      { findByText } <- render $ dragDropProvider {} [ mkSortable {} ]
       result <- findByText "sort:false:false:false:false"
       result `textContentShouldEqual` "sort:false:false:false:false"
 
@@ -77,8 +75,8 @@ spec = after_ cleanup do
       mkItem <- liftEffect $ component "SI" \{ id, index } -> React.do
         { ref } <- useSortable { id: SortableId id, index }
         pure $ refDiv ref ("si-" <> id) [ R.text $ "Item " <> id ]
-      { findByTestId } <- render $ dragDropProvider
-        { children: items <#> \(id /\ index) -> mkItem { id, index } }
+      { findByTestId } <- render $ dragDropProvider {}
+        (items <#> \(id /\ index) -> mkItem { id, index })
       _ <- findByTestId "si-a"
       _ <- findByTestId "si-b"
       _ <- findByTestId "si-c"

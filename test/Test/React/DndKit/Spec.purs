@@ -19,42 +19,37 @@ spec :: Spec Unit
 spec = after_ cleanup do
   describe "dragDropProvider" do
     it "children" do
-      { findByText } <- render $ dragDropProvider
-        { children: [ R.text "Hello" ] }
+      { findByText } <- render $ dragDropProvider {} [ R.text "Hello" ]
       result <- findByText "Hello"
       result `textContentShouldEqual` "Hello"
 
     it "sensors (default)" do
       { findByText } <- render $ dragDropProvider
-        { sensors: [ pointerSensorDefault, keyboardSensorDefault ]
-        , children: [ R.text "s" ]
-        }
+        { sensors: [ pointerSensorDefault, keyboardSensorDefault ] }
+        [ R.text "s" ]
       _ <- findByText "s"
       pure unit
 
     it "sensors (configured)" do
       ps /\ ks <- configuredSensors
       { findByText } <- render $ dragDropProvider
-        { sensors: [ ps, ks ]
-        , children: [ R.text "sc" ]
-        }
+        { sensors: [ ps, ks ] }
+        [ R.text "sc" ]
       _ <- findByText "sc"
       pure unit
 
     it "plugins" do
       { findByText } <- render $ dragDropProvider
-        { plugins: [ accessibility, autoScroller, cursor, feedback, preventSelection ]
-        , children: [ R.text "p" ]
-        }
+        { plugins: [ accessibility, autoScroller, cursor, feedback, preventSelection ] }
+        [ R.text "p" ]
       _ <- findByText "p"
       pure unit
 
     it "modifiers" do
       snapMod <- liftEffect $ snap { x: 20.0, y: 20.0 }
       { findByText } <- render $ dragDropProvider
-        { modifiers: [ restrictToVerticalAxis, restrictToHorizontalAxis, restrictToWindow, snapMod ]
-        , children: [ R.text "m" ]
-        }
+        { modifiers: [ restrictToVerticalAxis, restrictToHorizontalAxis, restrictToWindow, snapMod ] }
+        [ R.text "m" ]
       _ <- findByText "m"
       pure unit
 
@@ -66,25 +61,23 @@ spec = after_ cleanup do
         , onDragOver: \_ _ -> pure unit
         , onCollision: \_ _ -> pure unit
         , onDragEnd: \_ _ -> pure unit
-        , children: [ R.text "events" ]
         }
+        [ R.text "events" ]
       _ <- findByText "events"
       pure unit
 
   describe "dragOverlay" do
     it "children, className, style, tag, disabled" do
-      { findByText } <- render $ dragDropProvider
-        { children:
-            [ R.text "Beside overlay"
-            , dragOverlay
-                { children: [ R.text "Overlay content" ]
-                , className: "my-overlay"
-                , style: unsafeToForeign { opacity: 0.5 }
-                , tag: "section"
-                , disabled: false
-                }
-            ]
-        }
+      { findByText } <- render $ dragDropProvider {}
+        [ R.text "Beside overlay"
+        , dragOverlay
+            { className: "my-overlay"
+            , style: unsafeToForeign { opacity: 0.5 }
+            , tag: "section"
+            , disabled: false
+            }
+            [ R.text "Overlay content" ]
+        ]
       result <- findByText "Beside overlay"
       result `textContentShouldEqual` "Beside overlay"
   where

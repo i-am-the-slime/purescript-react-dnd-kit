@@ -37,6 +37,9 @@
             },
             {
               "web-events": ">=4.0.0 <5.0.0"
+            },
+            {
+              "yoga-react-dom": ">=1.0.1 <2.0.0"
             }
           ]
         },
@@ -997,6 +1000,12 @@
         "unsafe-coerce"
       ]
     },
+    "forgetmenot": {
+      "type": "registry",
+      "version": "0.1.0",
+      "integrity": "sha256-YYLWpHQwJ1zKmPxLo7sZOk+kYuKOpOpRhdz9vwI/p7Q=",
+      "dependencies": []
+    },
     "fork": {
       "type": "registry",
       "version": "6.0.0",
@@ -1909,6 +1918,58 @@
         "prelude",
         "unsafe-coerce",
         "web-events"
+      ]
+    },
+    "web-touchevents": {
+      "type": "registry",
+      "version": "4.0.0",
+      "integrity": "sha256-H02c53BJlHDlAgogj/x8bM7PagJjhMMrMPYy9I7Rf0s=",
+      "dependencies": [
+        "functions",
+        "maybe",
+        "nullable",
+        "prelude",
+        "unsafe-coerce",
+        "web-events",
+        "web-uievents"
+      ]
+    },
+    "web-uievents": {
+      "type": "registry",
+      "version": "5.0.0",
+      "integrity": "sha256-yh9uVLIGu8wE1+jwLehtfsRfR1eyiShhIMMhBPqKybE=",
+      "dependencies": [
+        "effect",
+        "enums",
+        "maybe",
+        "nullable",
+        "prelude",
+        "unsafe-coerce",
+        "web-events",
+        "web-html"
+      ]
+    },
+    "yoga-react-dom": {
+      "type": "registry",
+      "version": "1.0.1",
+      "integrity": "sha256-wPj2ck8DEjPVqYRYWhuFCWcfUp1d1OfPnWJN90g26AE=",
+      "dependencies": [
+        "datetime",
+        "effect",
+        "forgetmenot",
+        "functions",
+        "nullable",
+        "prelude",
+        "react-basic",
+        "react-basic-hooks",
+        "record",
+        "type-equality",
+        "typelevel-prelude",
+        "unsafe-coerce",
+        "web-dom",
+        "web-events",
+        "web-html",
+        "web-touchevents"
       ]
     }
   }

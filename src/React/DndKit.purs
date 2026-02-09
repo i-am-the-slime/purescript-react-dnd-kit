@@ -1,22 +1,27 @@
 module React.DndKit
   ( dragDropProvider
+  , dragDropProvider_
   , DragDropProviderProps
   , dragOverlay
+  , dragOverlay_
   , DragOverlayProps
   ) where
 
 import Prelude
 
+import Data.Function.Uncurried (Fn3, runFn3)
 import Effect (Effect)
 import Foreign (Foreign)
 import Prim.Row as Row
-import React.Basic (JSX, ReactComponent, element)
+import React.Basic (JSX, ReactComponent)
 import React.DndKit.Internal (wrapHandlers_)
 import React.DndKit.Types (CollisionEvent, DragDropManager, DragEndEvent, DragMoveEvent, DragOverEvent, DragStartEvent, Modifier, Plugin, Sensor)
+import Yoga.React.DOM.Internal (class IsJSX)
+
+foreign import createElementImpl :: forall component props children. Fn3 component props children JSX
 
 type DragDropProviderProps =
-  ( children :: Array JSX
-  , manager :: DragDropManager
+  ( manager :: DragDropManager
   , sensors :: Array Sensor
   , plugins :: Array Plugin
   , modifiers :: Array Modifier
@@ -30,12 +35,21 @@ type DragDropProviderProps =
 
 foreign import dragDropProviderImpl :: forall props. ReactComponent { | props }
 
-dragDropProvider :: forall props props_. Row.Union props props_ DragDropProviderProps => { | props } -> JSX
-dragDropProvider props = element dragDropProviderImpl (wrapHandlers_ props)
+dragDropProvider
+  :: forall jsx props props_
+   . IsJSX jsx
+  => Row.Union props props_ DragDropProviderProps
+  => { | props }
+  -> jsx
+  -> JSX
+dragDropProvider props children =
+  runFn3 createElementImpl dragDropProviderImpl (wrapHandlers_ props) children
+
+dragDropProvider_ :: forall jsx. IsJSX jsx => jsx -> JSX
+dragDropProvider_ = dragDropProvider {}
 
 type DragOverlayProps =
-  ( children :: Array JSX
-  , className :: String
+  ( className :: String
   , style :: Foreign
   , tag :: String
   , disabled :: Boolean
@@ -43,5 +57,15 @@ type DragOverlayProps =
 
 foreign import dragOverlayImpl :: forall props. ReactComponent { | props }
 
-dragOverlay :: forall props props_. Row.Union props props_ DragOverlayProps => { | props } -> JSX
-dragOverlay = element dragOverlayImpl
+dragOverlay
+  :: forall jsx props props_
+   . IsJSX jsx
+  => Row.Union props props_ DragOverlayProps
+  => { | props }
+  -> jsx
+  -> JSX
+dragOverlay props children =
+  runFn3 createElementImpl dragOverlayImpl props children
+
+dragOverlay_ :: forall jsx. IsJSX jsx => jsx -> JSX
+dragOverlay_ = dragOverlay {}

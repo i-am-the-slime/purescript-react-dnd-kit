@@ -41,8 +41,7 @@ spec = after_ cleanup do
               [ element rawDiv { ref: result.handleRef, "data-testid": "drag-handle", children: [] }
               ]
           }
-      { findByTestId } <- render $ dragDropProvider
-        { children: [ mkDraggableAll {} ] }
+      { findByTestId } <- render $ dragDropProvider {} [ mkDraggableAll {} ]
       _ <- findByTestId "draggable-all"
       _ <- findByTestId "drag-handle"
       pure unit
@@ -57,8 +56,7 @@ spec = after_ cleanup do
             <> ":"
             <> show result.isDropping
         pure $ refDiv result.ref "drag-res" [ R.text label ]
-      { findByText } <- render $ dragDropProvider
-        { children: [ mkDraggable {} ] }
+      { findByText } <- render $ dragDropProvider {} [ mkDraggable {} ]
       result <- findByText "drag:false:false:false"
       result `textContentShouldEqual` "drag:false:false:false"
 
@@ -78,8 +76,7 @@ spec = after_ cleanup do
           , "data-testid": "droppable-all"
           , children: []
           }
-      { findByTestId } <- render $ dragDropProvider
-        { children: [ mkDroppableAll {} ] }
+      { findByTestId } <- render $ dragDropProvider {} [ mkDroppableAll {} ]
       _ <- findByTestId "droppable-all"
       pure unit
 
@@ -88,8 +85,7 @@ spec = after_ cleanup do
         result <- useDroppable { id: DroppableId "z-res" }
         let label = "drop:" <> show result.isDropTarget
         pure $ refDiv result.ref "drop-res" [ R.text label ]
-      { findByText } <- render $ dragDropProvider
-        { children: [ mkDroppable {} ] }
+      { findByText } <- render $ dragDropProvider {} [ mkDroppable {} ]
       result <- findByText "drop:false"
       result `textContentShouldEqual` "drop:false"
 
@@ -105,8 +101,7 @@ spec = after_ cleanup do
           , onDragEnd: \_ _ -> pure unit
           }
         pure $ R.div_ children
-      { findByText } <- render $ dragDropProvider
-        { children: [ mkMonitor { children: [ R.text "Monitored" ] } ] }
+      { findByText } <- render $ dragDropProvider {} [ mkMonitor { children: [ R.text "Monitored" ] } ]
       result <- findByText "Monitored"
       result `textContentShouldEqual` "Monitored"
 
@@ -143,7 +138,6 @@ spec = after_ cleanup do
             <> "|iy:"
             <> show op.position.initial.y
         pure $ element rawDiv { "data-testid": "op-viewer", children: [ R.text label ] }
-      { findByText } <- render $ dragDropProvider
-        { children: [ mkOpViewer {} ] }
+      { findByText } <- render $ dragDropProvider {} [ mkOpViewer {} ]
       result <- findByText "src:none|tgt:none|evt:none|canceled:false|tx:0.0|ty:0.0|cx:0.0|cy:0.0|ix:0.0|iy:0.0"
       result `textContentShouldEqual` "src:none|tgt:none|evt:none|canceled:false|tx:0.0|ty:0.0|cx:0.0|cy:0.0|ix:0.0|iy:0.0"
