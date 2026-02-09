@@ -22,15 +22,15 @@ import Foreign (Foreign)
 import Prim.Row as Row
 import React.Basic.Hooks.Internal (Hook, unsafeHook)
 import React.DndKit.Internal (wrapHandlers_, convertOperationSnapshot_)
-import React.DndKit.Types (CallbackRef, CollisionDetector, CollisionEvent, DragDropManager, DragEndEvent, DragMoveEvent, DragOperationSnapshot, DragOverEvent, DragStartEvent, DraggableId, DraggableInstance, DroppableId, DroppableInstance, Modifier, Sensor)
+import React.DndKit.Types (CallbackRef, CollisionDetector, CollisionEvent, DragDropManager, DragEndEvent, DragMoveEvent, DragOperationSnapshot, DragOverEvent, DragStartEvent, DragType, DraggableId, DraggableInstance, DroppableId, DroppableInstance, FeedbackType, Modifier, Sensor)
 
 -- useDraggable
 
 type UseDraggableConfig a =
   ( id :: DraggableId
-  , type :: String
+  , type :: DragType
   , disabled :: Boolean
-  , feedback :: String
+  , feedback :: FeedbackType
   , modifiers :: Array Modifier
   , sensors :: Array Sensor
   , data :: a
@@ -61,7 +61,7 @@ useDraggable config = unsafeHook (runEffectFn1 useDraggableImpl config)
 type UseDroppableConfig a =
   ( id :: DroppableId
   , disabled :: Boolean
-  , type :: String
+  , type :: DragType
   , collisionDetector :: CollisionDetector
   , collisionPriority :: Number
   , data :: a

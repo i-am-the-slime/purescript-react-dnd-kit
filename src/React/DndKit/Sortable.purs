@@ -13,7 +13,7 @@ import Data.Newtype (class Newtype)
 import Effect.Uncurried (EffectFn1, runEffectFn1)
 import Prim.Row as Row
 import React.Basic.Hooks.Internal (Hook, unsafeHook)
-import React.DndKit.Types (CallbackRef, CollisionDetector, Modifier, Sensor, SortableInstance)
+import React.DndKit.Types (CallbackRef, CollisionDetector, DragType, FeedbackType, Modifier, Sensor, SortableInstance)
 
 newtype SortableId = SortableId String
 
@@ -32,10 +32,10 @@ type UseSortableConfig a =
   ( id :: SortableId
   , index :: Int
   , group :: String
-  , type :: String
-  , accept :: String
+  , type :: DragType
+  , accept :: DragType
   , disabled :: Boolean
-  , feedback :: String
+  , feedback :: FeedbackType
   , modifiers :: Array Modifier
   , sensors :: Array Sensor
   , collisionDetector :: CollisionDetector

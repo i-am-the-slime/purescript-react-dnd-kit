@@ -14,7 +14,7 @@ import React.DndKit.Collision (closestCenter)
 import React.DndKit.Hooks (useDragDropMonitor, useDragOperation, useDraggable, useDroppable)
 import React.DndKit.Modifiers (restrictToVerticalAxis)
 import React.DndKit.Sensors (pointerSensorDefault)
-import React.DndKit.Types (DraggableId(..), DroppableId(..))
+import React.DndKit.Types (DragType(..), DraggableId(..), DroppableId(..), clone)
 import React.TestingLibrary (cleanup, render)
 import Test.React.DndKit.Utils (rawDiv, refDiv)
 import Test.Spec (Spec, after_, describe, it)
@@ -27,9 +27,9 @@ spec = after_ cleanup do
       mkDraggableAll <- liftEffect $ component "DraggableAll" \_ -> React.do
         result <- useDraggable
           { id: DraggableId "d-all"
-          , type: "item"
+          , type: DragType "item"
           , disabled: false
-          , feedback: "clone"
+          , feedback: clone
           , modifiers: [ restrictToVerticalAxis ]
           , sensors: [ pointerSensorDefault ]
           , data: { tag: "hello" }
@@ -66,7 +66,7 @@ spec = after_ cleanup do
         result <- useDroppable
           { id: DroppableId "z-all"
           , disabled: false
-          , type: "zone"
+          , type: DragType "zone"
           , collisionDetector: closestCenter
           , collisionPriority: 10.0
           , data: { priority: 1 }

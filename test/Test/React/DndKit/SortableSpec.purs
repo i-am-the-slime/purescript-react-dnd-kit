@@ -13,6 +13,7 @@ import React.DndKit.Collision (closestCenter)
 import React.DndKit.Modifiers (restrictToVerticalAxis)
 import React.DndKit.Sensors (pointerSensorDefault)
 import React.DndKit.Sortable (SortableId(..), useSortable)
+import React.DndKit.Types (DragType(..), move)
 import React.TestingLibrary (cleanup, render)
 import Test.React.DndKit.Utils (rawDiv, refDiv)
 import Test.Spec (Spec, after_, describe, it)
@@ -27,10 +28,10 @@ spec = after_ cleanup do
           { id: SortableId "s-all"
           , index: 0
           , group: "cards"
-          , type: "card"
-          , accept: "card"
+          , type: DragType "card"
+          , accept: DragType "card"
           , disabled: false
-          , feedback: "move"
+          , feedback: move
           , modifiers: [ restrictToVerticalAxis ]
           , sensors: [ pointerSensorDefault ]
           , collisionDetector: closestCenter

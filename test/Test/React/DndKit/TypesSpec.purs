@@ -4,7 +4,7 @@ import Prelude
 
 import Data.Newtype (un)
 import React.DndKit.Sortable (SortableId(..))
-import React.DndKit.Types (DraggableId(..), DroppableId(..))
+import React.DndKit.Types (DragType(..), DraggableId(..), DroppableId(..), clone, move, noFeedback)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.Assertions (shouldEqual, shouldNotEqual)
 
@@ -48,6 +48,30 @@ spec = do
       show (SortableId "x") `shouldEqual` show "x"
     it "Newtype" do
       un SortableId (SortableId "test") `shouldEqual` "test"
+
+  describe "DragType" do
+    it "Eq" do
+      DragType "item" `shouldEqual` DragType "item"
+      DragType "item" `shouldNotEqual` DragType "zone"
+    it "Ord" do
+      compare (DragType "a") (DragType "b") `shouldEqual` LT
+    it "Show" do
+      show (DragType "x") `shouldEqual` show "x"
+    it "Newtype" do
+      un DragType (DragType "test") `shouldEqual` "test"
+
+  describe "FeedbackType" do
+    it "smart constructors are distinct" do
+      move `shouldNotEqual` clone
+      move `shouldNotEqual` noFeedback
+      clone `shouldNotEqual` noFeedback
+    it "Eq" do
+      move `shouldEqual` move
+      clone `shouldEqual` clone
+      noFeedback `shouldEqual` noFeedback
+    it "Ord" do
+      compare clone move `shouldEqual` LT
+      compare move noFeedback `shouldEqual` LT
 
   describe "id type safety" do
     it "DraggableId and DroppableId are distinct" do

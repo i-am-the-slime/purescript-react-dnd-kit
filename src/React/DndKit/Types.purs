@@ -1,4 +1,32 @@
-module React.DndKit.Types where
+module React.DndKit.Types
+  ( Coordinates
+  , CallbackRef
+  , DraggableId(..)
+  , DroppableId(..)
+  , DragType(..)
+  , FeedbackType
+  , move
+  , clone
+  , noFeedback
+  , Source
+  , Target
+  , DragOperationSnapshot
+  , DragStartEvent
+  , DragMoveEvent
+  , DragOverEvent
+  , DragEndEvent
+  , CollisionEvent
+  , DragDropManager
+  , Collision
+  , CollisionDetector
+  , Sensor
+  , Plugin
+  , Modifier
+  , DraggableInstance
+  , DroppableInstance
+  , SortableInstance
+  , DndEffect
+  ) where
 
 import Prelude
 
@@ -27,6 +55,31 @@ derive instance Newtype DroppableId _
 derive newtype instance Eq DroppableId
 derive newtype instance Ord DroppableId
 derive newtype instance Show DroppableId
+
+-- | Matching type for draggables and droppables.
+-- | Draggables with a given type can only be dropped on droppables that accept that type.
+newtype DragType = DragType String
+
+derive instance Newtype DragType _
+derive newtype instance Eq DragType
+derive newtype instance Ord DragType
+derive newtype instance Show DragType
+
+-- | Visual feedback strategy during drag.
+newtype FeedbackType = FeedbackType String
+
+derive newtype instance Eq FeedbackType
+derive newtype instance Ord FeedbackType
+derive newtype instance Show FeedbackType
+
+move :: FeedbackType
+move = FeedbackType "move"
+
+clone :: FeedbackType
+clone = FeedbackType "clone"
+
+noFeedback :: FeedbackType
+noFeedback = FeedbackType "none"
 
 -- | Source entity in a drag operation
 type Source =
