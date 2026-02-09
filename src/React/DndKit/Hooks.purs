@@ -50,8 +50,9 @@ foreign import data UseDraggable :: Type -> Type
 foreign import useDraggableImpl :: forall config. EffectFn1 { | config } UseDraggableResult
 
 useDraggable
-  :: forall a config config_
-   . Row.Union config config_ (UseDraggableConfig a)
+  :: forall a config config_ rest
+   . Row.Cons "id" DraggableId rest config
+  => Row.Union config config_ (UseDraggableConfig a)
   => { | config }
   -> Hook UseDraggable UseDraggableResult
 useDraggable config = unsafeHook (runEffectFn1 useDraggableImpl config)
@@ -78,8 +79,9 @@ foreign import data UseDroppable :: Type -> Type
 foreign import useDroppableImpl :: forall config. EffectFn1 { | config } UseDroppableResult
 
 useDroppable
-  :: forall a config config_
-   . Row.Union config config_ (UseDroppableConfig a)
+  :: forall a config config_ rest
+   . Row.Cons "id" DroppableId rest config
+  => Row.Union config config_ (UseDroppableConfig a)
   => { | config }
   -> Hook UseDroppable UseDroppableResult
 useDroppable config = unsafeHook (runEffectFn1 useDroppableImpl config)

@@ -61,8 +61,10 @@ foreign import data UseSortable :: Type -> Type
 foreign import useSortableImpl :: forall config. EffectFn1 { | config } UseSortableResult
 
 useSortable
-  :: forall a config config_
-   . Row.Union config config_ (UseSortableConfig a)
+  :: forall a config config_ restId restIndex
+   . Row.Cons "id" SortableId restId config
+  => Row.Cons "index" Int restIndex config
+  => Row.Union config config_ (UseSortableConfig a)
   => { | config }
   -> Hook UseSortable UseSortableResult
 useSortable config = unsafeHook (runEffectFn1 useSortableImpl config)
