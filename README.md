@@ -100,8 +100,15 @@ dropZone = component "DropZone" \_ -> React.do
 import React.DndKit.Types (DragType(..))
 
 -- only "card" draggables can be dropped on "card" droppables
-useDraggable { id: DraggableId "a", type: DragType "card" }
-useDroppable { id: DroppableId "b", type: DragType "card" }
+draggable :: {} -> JSX
+draggable = component "Draggable" \_ -> React.do
+  { ref } <- useDraggable { id: DraggableId "a", type: DragType "card" }
+  pure $ div { ref } "Card"
+
+target :: {} -> JSX
+target = component "Target" \_ -> React.do
+  { ref } <- useDroppable { id: DroppableId "b", type: DragType "card" }
+  pure $ div { ref } "Drop cards here"
 ```
 
 ## Feedback
@@ -109,26 +116,35 @@ useDroppable { id: DroppableId "b", type: DragType "card" }
 ```purescript
 import React.DndKit.Types (move, clone, noFeedback)
 
-useSortable { id: SortableId "s", index: 0, feedback: move }
-useSortable { id: SortableId "t", index: 1, feedback: clone }
+moveItem :: { id :: String, index :: Int } -> JSX
+moveItem = component "MoveItem" \{ id, index } -> React.do
+  { ref } <- useSortable { id: SortableId id, index, feedback: move }
+  pure $ div { ref } id
+
+cloneItem :: { id :: String, index :: Int } -> JSX
+cloneItem = component "CloneItem" \{ id, index } -> React.do
+  { ref } <- useSortable { id: SortableId id, index, feedback: clone }
+  pure $ div { ref } id
 ```
 
 ## Event handlers
 
 ```purescript
-dragDropProvider
-  { sensors: [ pointerSensorDefault ]
-  , plugins: [ feedback ]
-  , onDragStart: \event _manager ->
-      log $ "Drag started"
-  , onDragOver: \event _manager ->
-      pure unit
-  , onDragEnd: \event _manager ->
-      when (not event.canceled) do
-        log $ "Drag ended"
-  }
-  [ -- children
-  ]
+eventExample :: {} -> JSX
+eventExample = component "EventExample" \_ -> React.do
+  pure $ dragDropProvider
+    { sensors: [ pointerSensorDefault ]
+    , plugins: [ feedback ]
+    , onDragStart: \event _manager ->
+        log "Drag started"
+    , onDragOver: \event _manager ->
+        pure unit
+    , onDragEnd: \event _manager ->
+        when (not event.canceled) do
+          log "Drag ended"
+    }
+    [ -- children
+    ]
 ```
 
 ## Sensors
@@ -136,15 +152,16 @@ dragDropProvider
 ```purescript
 import React.DndKit.Sensors (pointerSensor, keyboardSensor, distanceConstraint, delayConstraint)
 
--- with activation constraints
-dragDropProvider
-  { sensors:
-      [ pointerSensor { activationConstraints: distanceConstraint { value: 5.0 } }
-      , keyboardSensor {}
-      ]
-  }
-  [ -- children
-  ]
+sensorExample :: {} -> JSX
+sensorExample = component "SensorExample" \_ -> React.do
+  pure $ dragDropProvider
+    { sensors:
+        [ pointerSensor { activationConstraints: distanceConstraint { value: 5.0 } }
+        , keyboardSensor {}
+        ]
+    }
+    [ -- children
+    ]
 ```
 
 ## Modifiers
@@ -152,12 +169,16 @@ dragDropProvider
 ```purescript
 import React.DndKit.Modifiers (restrictToVerticalAxis, restrictToWindow, snap)
 
-dragDropProvider { modifiers: [ restrictToVerticalAxis, restrictToWindow ] }
-  [ -- children
-  ]
+modifierExample :: {} -> JSX
+modifierExample = component "ModifierExample" \_ -> React.do
+  pure $ dragDropProvider { modifiers: [ restrictToVerticalAxis, restrictToWindow ] }
+    [ -- children
+    ]
 
--- per-draggable modifiers
-useDraggable { id: DraggableId "a", modifiers: [ snap 20.0 ] }
+snappingItem :: {} -> JSX
+snappingItem = component "SnappingItem" \_ -> React.do
+  { ref } <- useDraggable { id: DraggableId "a", modifiers: [ snap 20.0 ] }
+  pure $ div { ref } "Snaps to 20px grid"
 ```
 
 ## Collision detection
@@ -165,8 +186,15 @@ useDraggable { id: DraggableId "a", modifiers: [ snap 20.0 ] }
 ```purescript
 import React.DndKit.Collision (closestCenter, pointerIntersection)
 
-useDroppable { id: DroppableId "a", collisionDetector: closestCenter }
-useSortable { id: SortableId "b", index: 0, collisionDetector: pointerIntersection }
+dropZone :: {} -> JSX
+dropZone = component "DropZone" \_ -> React.do
+  { ref } <- useDroppable { id: DroppableId "a", collisionDetector: closestCenter }
+  pure $ div { ref } "Zone"
+
+sortItem :: { id :: String, index :: Int } -> JSX
+sortItem = component "SortItem" \{ id, index } -> React.do
+  { ref } <- useSortable { id: SortableId id, index, collisionDetector: pointerIntersection }
+  pure $ div { ref } id
 ```
 
 ## Drag overlay
@@ -174,10 +202,16 @@ useSortable { id: SortableId "b", index: 0, collisionDetector: pointerIntersecti
 ```purescript
 import React.DndKit (dragOverlay, dragOverlay_)
 
-dragOverlay { className: "overlay" } do
-  div {} "I'm floating!"
+overlayExample :: {} -> JSX
+overlayExample = component "OverlayExample" \_ -> React.do
+  pure $ dragDropProvider_ do
+    dragOverlay { className: "overlay" } do
+      div {} "I'm floating!"
 
-dragOverlay_ "Just text"
+overlayText :: {} -> JSX
+overlayText = component "OverlayText" \_ -> React.do
+  pure $ dragDropProvider_ do
+    dragOverlay_ "Just text"
 ```
 
 ## Monitoring
@@ -193,46 +227,54 @@ monitor = component "Monitor" \_ -> React.do
     }
   op <- useDragOperation
   pure $ div {} $ "canceled: " <> show op.canceled
-
 ```
 
 ## All config options
 
 ```purescript
-useDraggable
-  { id: DraggableId "d"            -- required
-  , type: DragType "card"
-  , disabled: false
-  , feedback: clone
-  , modifiers: [ restrictToVerticalAxis ]
-  , sensors: [ pointerSensorDefault ]
-  , data: { tag: "hello" }
-  }
+allDraggableOptions :: {} -> JSX
+allDraggableOptions = component "AllDraggable" \_ -> React.do
+  { ref } <- useDraggable
+    { id: DraggableId "d"            -- required
+    , type: DragType "card"
+    , disabled: false
+    , feedback: clone
+    , modifiers: [ restrictToVerticalAxis ]
+    , sensors: [ pointerSensorDefault ]
+    , data: { tag: "hello" }
+    }
+  pure $ div { ref } "Draggable"
 
-useDroppable
-  { id: DroppableId "z"            -- required
-  , type: DragType "card"
-  , disabled: false
-  , collisionDetector: closestCenter
-  , collisionPriority: 10.0
-  , data: { priority: 1 }
-  }
+allDroppableOptions :: {} -> JSX
+allDroppableOptions = component "AllDroppable" \_ -> React.do
+  { ref } <- useDroppable
+    { id: DroppableId "z"            -- required
+    , type: DragType "card"
+    , disabled: false
+    , collisionDetector: closestCenter
+    , collisionPriority: 10.0
+    , data: { priority: 1 }
+    }
+  pure $ div { ref } "Droppable"
 
-useSortable
-  { id: SortableId "s"             -- required
-  , index: 0                       -- required
-  , group: "cards"
-  , type: DragType "card"
-  , accept: DragType "card"
-  , disabled: false
-  , feedback: move
-  , modifiers: [ restrictToVerticalAxis ]
-  , sensors: [ pointerSensorDefault ]
-  , collisionDetector: closestCenter
-  , collisionPriority: 5.0
-  , transition: { duration: 200.0, easing: "ease", idle: true }
-  , data: { order: 0 }
-  }
+allSortableOptions :: {} -> JSX
+allSortableOptions = component "AllSortable" \_ -> React.do
+  { ref } <- useSortable
+    { id: SortableId "s"             -- required
+    , index: 0                       -- required
+    , group: "cards"
+    , type: DragType "card"
+    , accept: DragType "card"
+    , disabled: false
+    , feedback: move
+    , modifiers: [ restrictToVerticalAxis ]
+    , sensors: [ pointerSensorDefault ]
+    , collisionDetector: closestCenter
+    , collisionPriority: 5.0
+    , transition: { duration: 200.0, easing: "ease", idle: true }
+    , data: { order: 0 }
+    }
+  pure $ div { ref } "Sortable"
 ```
 
 ## License
