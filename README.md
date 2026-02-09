@@ -4,6 +4,8 @@ PureScript bindings for [dnd-kit](https://dndkit.com/) (experimental `v0.2.x` br
 
 > **Important**: This library wraps the **experimental** version of dnd-kit (`@dnd-kit/react@^0.2.4`), not the stable v5 release. The experimental API is a ground-up rewrite and is not backwards-compatible.
 
+[Pursuit documentation](https://pursuit.purescript.org/packages/purescript-react-dnd-kit)
+
 ## Installation
 
 Install the PureScript package:
@@ -24,7 +26,7 @@ npm install @dnd-kit/react@^0.2.4 @dnd-kit/dom@^0.2.4 @dnd-kit/abstract@^0.2.4 @
 module Example where
 
 import Prelude
-import React.Basic.Hooks (component, (/\))
+import React.Basic.Hooks (component)
 import React.Basic.Hooks as Hooks
 import React.Basic.DOM as R
 import React.DndKit (dragDropProvider)
@@ -37,8 +39,9 @@ mkApp = component "App" \_ -> Hooks.do
   pure $ dragDropProvider
     { sensors: [ pointerSensorDefault ]
     , plugins: [ feedback, preventSelection ]
-    , children: [ -- your draggable and droppable components ]
     }
+    [ -- your draggable and droppable components
+    ]
 
 mkDraggableItem = component "DraggableItem" \_ -> Hooks.do
   { ref, handleRef } <- useDraggable { id: DraggableId "item-1" }
@@ -49,6 +52,8 @@ mkDropZone = component "DropZone" \_ -> Hooks.do
   pure $ R.div { ref, children: [ R.text if isDropTarget then "Drop here!" else "Drop zone" ] }
 ```
 
+Components that accept children (`dragDropProvider`, `dragOverlay`) take them as a second argument. The children argument accepts anything with an `IsJSX` instance: `JSX`, `String`, or `Array JSX`.
+
 All config props are optional (except `id`). Pass only what you need:
 
 ```purescript
@@ -56,14 +61,14 @@ All config props are optional (except `id`). Pass only what you need:
 useDraggable { id: DraggableId "a" }
 
 -- with options
-useDraggable { id: DraggableId "a", type: "card", disabled: true, data: { color: "red" } }
+useDraggable { id: DraggableId "a", type: DragType "card", feedback: clone, disabled: true, data: { color: "red" } }
 ```
 
 ## Modules
 
 | Module | Exports |
 |---|---|
-| `React.DndKit` | `dragDropProvider`, `dragOverlay` |
+| `React.DndKit` | `dragDropProvider`, `dragDropProvider_`, `dragOverlay`, `dragOverlay_` |
 | `React.DndKit.Hooks` | `useDraggable`, `useDroppable`, `useDragDropMonitor`, `useDragOperation` |
 | `React.DndKit.Sortable` | `useSortable`, `SortableId` |
 | `React.DndKit.Sensors` | `pointerSensor`, `keyboardSensor`, `distanceConstraint`, `delayConstraint` |
@@ -71,7 +76,7 @@ useDraggable { id: DraggableId "a", type: "card", disabled: true, data: { color:
 | `React.DndKit.Modifiers` | `restrictToVerticalAxis`, `restrictToHorizontalAxis`, `restrictToWindow`, `restrictToElement`, `snap` |
 | `React.DndKit.Collision` | `defaultCollisionDetection`, `closestCenter`, `closestCorners`, `pointerIntersection`, `shapeIntersection`, `directionBiased`, `pointerDistance` |
 | `React.DndKit.Helpers` | `move`, `swap`, `arrayMove`, `arraySwap` |
-| `React.DndKit.Types` | `DraggableId`, `DroppableId`, `CallbackRef`, `Coordinates`, `DragOperationSnapshot`, event types, opaque types |
+| `React.DndKit.Types` | `DraggableId`, `DroppableId`, `DragType`, `FeedbackType` (`move`, `clone`, `noFeedback`), `CallbackRef`, `Coordinates`, `DragOperationSnapshot`, event types, opaque types |
 
 ## Sortable lists
 
@@ -100,8 +105,9 @@ dragDropProvider
       when (not event.canceled) do
         -- reorder your state
         pure unit
-  , children: [ ... ]
   }
+  [ -- children
+  ]
 ```
 
 ## Type safety
@@ -112,6 +118,21 @@ Draggable, droppable, and sortable IDs are distinct newtypes and cannot be mixed
 DraggableId "x" :: DraggableId  -- for useDraggable
 DroppableId "y" :: DroppableId  -- for useDroppable
 SortableId  "z" :: SortableId   -- for useSortable
+```
+
+`DragType` is a newtype over `String` for type/accept matching between draggables and droppables:
+
+```purescript
+useDraggable { id: DraggableId "a", type: DragType "card" }
+useDroppable { id: DroppableId "b", type: DragType "card" }
+```
+
+`FeedbackType` controls the visual feedback strategy during drag. It is opaque with smart constructors:
+
+```purescript
+import React.DndKit.Types (move, clone, noFeedback)
+
+useSortable { id: SortableId "s", index: 0, feedback: move }
 ```
 
 Hook results return opaque `CallbackRef` values. Pass them as `ref` props on your DOM elements.
