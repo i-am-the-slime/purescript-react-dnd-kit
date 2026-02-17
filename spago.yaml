@@ -1,7 +1,9 @@
+workspace: {}
+
 package:
   name: react-dnd-kit
   publish:
-    version: 0.3.0
+    version: 0.4.0
     license: MIT
     location:
       githubOwner: i-am-the-slime
@@ -17,23 +19,25 @@ package:
     - nullable: ">=6.0.0 <7.0.0"
     - prelude: ">=6.0.2 <7.0.0"
     - react-basic: ">=17.0.0 <18.0.0"
-    - react-basic-hooks: ">=8.2.0 <10.0.0"
+    - react-basic-hooks: ">=8.2.0 <9.0.0"
+    - unsafe-coerce: ">=6.0.0 <7.0.0"
     - web-dom: ">=6.0.0 <7.0.0"
     - web-events: ">=4.0.0 <5.0.0"
-    - yoga-react-dom: ">=1.0.1 <2.0.0"
+    - yoga-react-dom: ">=1.0.3 <2.0.0"
   test:
     main: Test.Main
     dependencies:
       - aff
+      - arrays
       - console
+      - foldable-traversable
+      - integers
       - react-basic-dom
       - react-basic-hooks
       - react-testing-library
       - spec
       - spec-discovery
+      - strings
       - tuples
       - unsafe-coerce
-workspace:
-  packageSet:
-    registry: 73.0.0
-  extraPackages: {}
+      - yoga-stories

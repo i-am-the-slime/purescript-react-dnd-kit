@@ -26,12 +26,14 @@ module React.DndKit.Types
   , DroppableInstance
   , SortableInstance
   , DndEffect
+  , callbackRef
   ) where
 
 import Prelude
 
 import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype)
+import Unsafe.Coerce (unsafeCoerce)
 import Web.DOM (Element)
 import Web.Event.Event (Event)
 
@@ -41,6 +43,10 @@ type Coordinates = { x :: Number, y :: Number }
 -- | Callback ref passed to DOM elements for dnd-kit to track them.
 -- | Pass this as the `ref` prop on your DOM element.
 foreign import data CallbackRef :: Type
+
+-- | Convert a CallbackRef to any ref type expected by DOM elements.
+callbackRef :: forall a. CallbackRef -> a
+callbackRef = unsafeCoerce
 
 newtype DraggableId = DraggableId String
 

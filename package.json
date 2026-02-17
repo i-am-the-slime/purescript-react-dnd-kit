@@ -12,7 +12,8 @@
     "global-jsdom": "^28.0.0",
     "jsdom": "^28.0.0",
     "jsdom-global": "^3.0.2",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "yoga-stories": "/Users/mark/Developer/purescript-yoga-stories/cli"
   },
   "peerDependencies": {
     "typescript": "^5"
