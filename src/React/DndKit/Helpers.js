@@ -6,3 +6,15 @@ export const arrayMove = (array) => (from) => (to) =>
   Helpers.arrayMove(array, from, to);
 export const arraySwap = (array) => (from) => (to) =>
   Helpers.arraySwap(array, from, to);
+
+export const moveOnDragImpl = (setState) => ({
+  __rawHandler: (event, manager) => {
+    setState((items) => Helpers.move(items, event))();
+  }
+});
+
+export const swapOnDragImpl = (setState) => ({
+  __rawHandler: (event, manager) => {
+    setState((items) => Helpers.swap(items, event))();
+  }
+});

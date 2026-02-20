@@ -3,10 +3,15 @@ module React.DndKit.Helpers
   , swap
   , moveItems
   , swapItems
+  , moveOnDrag
+  , swapOnDrag
   , arrayMove
   , arraySwap
   ) where
 
+import Prelude
+
+import Effect (Effect)
 import Foreign (Foreign)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -30,6 +35,22 @@ moveItems items event = unsafeCoerce (move (unsafeCoerce items) (unsafeCoerce ev
 -- | Use in onDragOver or onDragEnd.
 swapItems :: forall items event. items -> event -> items
 swapItems items event = unsafeCoerce (swap (unsafeCoerce items) (unsafeCoerce event))
+
+-- | Pass directly as onDragOver / onDragEnd to apply `move` using the raw event.
+-- | Works with flat arrays and grouped records (kanban).
+foreign import moveOnDragImpl :: forall items. ((items -> items) -> Effect Unit) -> Foreign
+
+moveOnDrag :: forall items event manager result
+  . ((items -> items) -> Effect Unit) -> event -> manager -> result
+moveOnDrag = unsafeCoerce <<< moveOnDragImpl
+
+-- | Pass directly as onDragOver / onDragEnd to apply `swap` using the raw event.
+-- | Works with flat arrays and grouped records (kanban).
+foreign import swapOnDragImpl :: forall items. ((items -> items) -> Effect Unit) -> Foreign
+
+swapOnDrag :: forall items event manager result
+  . ((items -> items) -> Effect Unit) -> event -> manager -> result
+swapOnDrag = unsafeCoerce <<< swapOnDragImpl
 
 -- | Low-level array move: moves element from one index to another
 foreign import arrayMove :: forall a. Array a -> Int -> Int -> Array a
