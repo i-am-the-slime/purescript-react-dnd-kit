@@ -4,12 +4,13 @@ import Prelude hiding (div)
 
 import Data.Array (mapWithIndex)
 import Data.Tuple.Nested ((/\))
+import Effect (Effect)
 import React.Basic (JSX)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider)
-import React.DndKit.Helpers (moveOnDrag)
+import React.DndKit.Helpers (moveItems)
 import React.DndKit.Sortable (SortableId(..), useSortable)
-import React.DndKit.Types (callbackRef, clone)
+import React.DndKit.Types (DragDropManager, DragEndEvent, callbackRef)
 import Test.React.DndKit.Stories.Kanban.Styles as Styles
 import Yoga.React (component)
 import Yoga.React.DOM.HTML (div)
@@ -26,16 +27,14 @@ type Task = { id :: String, title :: String }
 kanban :: Props -> JSX
 kanban = component "Kanban" \props -> React.do
   tasks /\ setTasks <- React.useState initialTasks
+  let
+    onDragEnd :: DragEndEvent -> DragDropManager -> Effect Unit
+    onDragEnd event _ = setTasks \current -> moveItems current event
   pure $ div { style: Styles.boardStyle } do
-    dragDropProvider
-      { onDragOver: moveOnDrag setTasks
-      , onDragEnd: moveOnDrag setTasks
-      }
-      [ div { style: Styles.columnStyle props.columnColor }
-          ( tasks # mapWithIndex \index task ->
-              card { id: task.id, title: task.title, index, cardColor: props.cardColor }
-          )
-      ]
+    dragDropProvider { onDragEnd }
+      ( tasks # mapWithIndex \index task ->
+          card { id: task.id, title: task.title, index, cardColor: props.cardColor }
+      )
   where
   initialTasks =
     [ { id: "task-1", title: "Design mockups" }
@@ -54,7 +53,7 @@ type CardProps =
 
 card :: CardProps -> JSX
 card = component "Card" \props -> React.do
-  result <- useSortable { id: SortableId props.id, index: props.index, feedback: clone }
+  result <- useSortable { id: SortableId props.id, index: props.index }
   let opacity = if result.isDragging then "0.5" else "1"
   let cursor = if result.isDragging then "grabbing" else "grab"
   pure $

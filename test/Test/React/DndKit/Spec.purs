@@ -12,6 +12,7 @@ import React.DndKit.Modifiers (restrictToHorizontalAxis, restrictToVerticalAxis,
 import React.DndKit.Plugins (accessibility, autoScroller, cursor, feedback, preventSelection)
 import React.DndKit.Sensors (delayConstraint, distanceConstraint, keyboardSensor, keyboardSensorDefault, pointerSensor, pointerSensorDefault)
 import React.TestingLibrary (cleanup, render)
+import Test.React.DndKit.Stories.Kanban (kanban)
 import Test.Spec (Spec, after_, describe, it)
 import Test.Spec.Assertions.DOM (textContentShouldEqual)
 
@@ -65,6 +66,12 @@ spec = after_ cleanup do
         [ R.text "events" ]
       _ <- findByText "events"
       pure unit
+
+  describe "kanban with moveOnDrag" do
+    it "renders cards" do
+      { findByText } <- render $ kanban { columnColor: "#1e293b", cardColor: "#334155", headerColor: "#fff" }
+      result <- findByText "Design mockups"
+      result `textContentShouldEqual` "Design mockups"
 
   describe "dragOverlay" do
     it "children, className, style, tag, disabled" do
