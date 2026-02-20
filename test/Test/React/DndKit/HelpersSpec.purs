@@ -12,6 +12,7 @@ foreign import mockDragEvent :: String -> String -> Foreign
 foreign import testRawHandlerDetection :: Unit -> Boolean
 foreign import testRawHandlerCalled :: Unit -> Boolean
 foreign import testMoveOnDragImplShape :: Unit -> Boolean
+foreign import testMoveWithConvertedEvent :: Unit -> String
 foreign import testMoveOnDragEndToEnd :: Unit -> Foreign
 
 spec :: Spec Unit
@@ -66,6 +67,12 @@ spec = do
     it "end-to-end: wrapHandlers + moveOnDragImpl reorders items" do
       let result = testMoveOnDragEndToEnd unit
       (unsafeCoerce result :: Boolean) `shouldEqual` true
+
+  describe "moveItems with converted event" do
+    it "move receives Maybe-wrapped source/target from convertOperation" do
+      let result = testMoveWithConvertedEvent unit
+      -- This will show us what moveItems actually sees
+      result `shouldEqual` "INSPECT"
 
   where
   asItems :: Array { id :: String } -> Foreign

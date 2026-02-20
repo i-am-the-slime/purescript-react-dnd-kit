@@ -4,13 +4,12 @@ import Prelude hiding (div)
 
 import Data.Array (mapWithIndex)
 import Data.Tuple.Nested ((/\))
-import Effect (Effect)
 import React.Basic (JSX)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider)
-import React.DndKit.Helpers (moveItems)
+import React.DndKit.Helpers (moveOnDrag)
 import React.DndKit.Sortable (SortableId(..), useSortable)
-import React.DndKit.Types (DragDropManager, DragEndEvent, callbackRef)
+import React.DndKit.Types (callbackRef)
 import Test.React.DndKit.Stories.Kanban.Styles as Styles
 import Yoga.React (component)
 import Yoga.React.DOM.HTML (div)
@@ -27,11 +26,11 @@ type Task = { id :: String, title :: String }
 kanban :: Props -> JSX
 kanban = component "Kanban" \props -> React.do
   tasks /\ setTasks <- React.useState initialTasks
-  let
-    onDragEnd :: DragEndEvent -> DragDropManager -> Effect Unit
-    onDragEnd event _ = setTasks \current -> moveItems current event
   pure $ div { style: Styles.boardStyle } do
-    dragDropProvider { onDragEnd }
+    dragDropProvider
+      { onDragOver: moveOnDrag setTasks
+      , onDragEnd: moveOnDrag setTasks
+      }
       ( tasks # mapWithIndex \index task ->
           card { id: task.id, title: task.title, index, cardColor: props.cardColor }
       )

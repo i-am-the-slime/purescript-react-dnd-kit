@@ -48,6 +48,46 @@ export const testMoveOnDragImplShape = () => {
     && typeof result.__rawHandler === "function";
 };
 
+// Test: does move work with a CONVERTED event (what moveItems receives)?
+import { convertOperationSnapshot } from "../../src/React/DndKit/Internal.js";
+import { toMaybe as psToMaybe } from "../../output/Data.Nullable/index.js";
+import { move as dndMove } from "@dnd-kit/helpers";
+
+export const testMoveWithConvertedEvent = () => {
+  const rawOperation = {
+    source: { id: "a", index: 0, element: null, manager: { dragOperation: { shape: null, position: { current: { x: 0, y: 0 } } } } },
+    target: { id: "c", index: 2, element: null },
+    canceled: false,
+    activatorEvent: null,
+    position: { current: { x: 0, y: 0 }, initial: { x: 0, y: 0 } },
+    transform: { x: 0, y: 0 },
+  };
+
+  // This is exactly what convertDragEndEvent does
+  const convertedOperation = convertOperationSnapshot(psToMaybe, rawOperation);
+
+  const convertedEvent = {
+    operation: convertedOperation,
+    canceled: false,
+  };
+
+  const items = [{ id: "a" }, { id: "b" }, { id: "c" }];
+
+  // moveItems does: dndMove(items, convertedEvent)
+  const result = dndMove(items, convertedEvent);
+  const sameRef = result === items;
+  const ids = result.map(x => x.id).join(",");
+  return JSON.stringify({
+    sameRef,
+    ids,
+    sourceType: typeof convertedOperation.source,
+    sourceConstructor: convertedOperation.source?.constructor?.name,
+    sourceHasId: "id" in (convertedOperation.source || {}),
+    sourceId: convertedOperation.source?.id,
+    sourceValue0Id: convertedOperation.source?.value0?.id,
+  });
+};
+
 export const testMoveOnDragEndToEnd = () => {
   let capturedItems = null;
   // Mock PureScript-style setState: (items -> items) -> Effect Unit
