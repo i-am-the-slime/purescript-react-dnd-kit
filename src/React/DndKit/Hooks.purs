@@ -63,6 +63,7 @@ type UseDroppableConfig a =
   ( id :: DroppableId
   , disabled :: Boolean
   , type :: DragType
+  , accept :: DragType
   , collisionDetector :: CollisionDetector
   , collisionPriority :: Number
   , data :: a

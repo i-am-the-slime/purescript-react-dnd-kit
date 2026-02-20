@@ -10,7 +10,7 @@ import React.DndKit (dragDropProvider)
 import React.DndKit.Helpers (moveOnDrag)
 import React.DndKit.Sortable (SortableId(..), useSortable)
 import React.DndKit.Hooks (useDroppable)
-import React.DndKit.Types (DroppableId(..), callbackRef, move)
+import React.DndKit.Types (DragType(..), DroppableId(..), callbackRef, clone)
 import Test.React.DndKit.Stories.Kanban.Styles as Styles
 import Yoga.React (component)
 import Yoga.React.DOM.HTML (div, h3, span)
@@ -69,7 +69,7 @@ type ColumnProps =
 
 column :: ColumnProps -> JSX
 column = component "Column" \props -> React.do
-  droppable <- useDroppable { id: DroppableId props.group, collisionPriority: 0.0 }
+  droppable <- useDroppable { id: DroppableId props.group, type: DragType "column", accept: DragType "item", collisionPriority: 0.0 }
   pure $
     div { style: Styles.columnStyle props.columnColor }
       [ div { style: Styles.headerStyle }
@@ -92,7 +92,7 @@ type CardProps =
 
 card :: CardProps -> JSX
 card = component "Card" \props -> React.do
-  result <- useSortable { id: SortableId props.id, index: props.index, group: props.group, feedback: move }
+  result <- useSortable { id: SortableId props.id, index: props.index, group: props.group, type: DragType "item", accept: DragType "item", feedback: clone }
   let opacity = if result.isDragging then "0.5" else "1"
   let cursor = if result.isDragging then "grabbing" else "grab"
   pure $
