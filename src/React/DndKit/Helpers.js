@@ -11,14 +11,11 @@ export const moveOnDragImpl = (setState) => ({
   __rawHandler: (event, manager) => {
     setState((items) => {
       const result = Helpers.move(items, event);
-      console.log("[moveOnDrag]", {
-        sourceId: event.operation?.source?.id,
-        targetId: event.operation?.target?.id,
-        canceled: event.operation?.canceled,
-        itemsBefore: Array.isArray(items) ? items.map(x => x.id || x) : Object.keys(items),
-        itemsAfter: Array.isArray(result) ? result.map(x => x.id || x) : Object.keys(result),
-        same: items === result,
-      });
+      const src = event.operation?.source;
+      const tgt = event.operation?.target;
+      const beforeIds = Array.isArray(items) ? items.map(x => x.id || x).join(",") : JSON.stringify(items);
+      const afterIds = Array.isArray(result) ? result.map(x => x.id || x).join(",") : JSON.stringify(result);
+      console.log(`[moveOnDrag] src=${src?.id}(idx=${src?.index}) tgt=${tgt?.id}(idx=${tgt?.index}) same=${items === result} before=[${beforeIds}] after=[${afterIds}]`);
       return result;
     })();
   }
