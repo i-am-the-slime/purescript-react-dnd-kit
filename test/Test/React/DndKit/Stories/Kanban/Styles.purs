@@ -25,8 +25,8 @@ headerStyle = css
   , padding: "0 4px"
   }
 
-titleStyle :: CSS
-titleStyle = css { margin: "0", color: "white", fontSize: "14px", fontWeight: "600" }
+titleStyle :: String -> CSS
+titleStyle col = css { margin: "0", color: col, fontSize: "14px", fontWeight: "600" }
 
 countStyle :: CSS
 countStyle = css
