@@ -9,10 +9,6 @@ import Test.Spec.Assertions (shouldEqual)
 import Unsafe.Coerce (unsafeCoerce)
 
 foreign import mockDragEvent :: String -> String -> Foreign
-foreign import testRawHandlerDetection :: Unit -> Boolean
-foreign import testRawHandlerCalled :: Unit -> Boolean
-foreign import testMoveOnDragImplShape :: Unit -> Boolean
-foreign import testMoveOnDragEndToEnd :: Unit -> Foreign
 foreign import testDndMoveFailsWithConvertedEvent :: Unit -> Boolean
 foreign import testPsMoveWorksWithConvertedFlatArray :: Unit -> String
 foreign import testPsMoveWorksWithConvertedGrouped :: Unit -> String
@@ -59,23 +55,12 @@ spec = do
       let result = toGroupedIds3 (move items event)
       result `shouldEqual` { todo: [], doing: [ "t2" ], done: [ "t1" ] }
 
-  describe "moveOnDrag (__rawHandler)" do
-    it "wrapHandlers detects __rawHandler sentinel" do
-      testRawHandlerDetection unit `shouldEqual` true
-    it "wrapHandlers calls the raw handler with event and manager" do
-      testRawHandlerCalled unit `shouldEqual` true
-    it "moveOnDragImpl returns an object with __rawHandler" do
-      testMoveOnDragImplShape unit `shouldEqual` true
-    it "end-to-end: wrapHandlers + moveOnDragImpl reorders items" do
-      let result = testMoveOnDragEndToEnd unit
-      (unsafeCoerce result :: Boolean) `shouldEqual` true
-
-  describe "moveItems with converted events" do
+  describe "move with converted events (__rawOp)" do
     it "@dnd-kit/helpers move() fails with Maybe-wrapped source/target" do
       testDndMoveFailsWithConvertedEvent unit `shouldEqual` true
-    it "PureScript move() works with converted flat array via __rawOp" do
+    it "move() works with converted flat array" do
       testPsMoveWorksWithConvertedFlatArray unit `shouldEqual` "b,c,a"
-    it "PureScript move() works with converted grouped record via __rawOp" do
+    it "move() works with converted grouped record" do
       testPsMoveWorksWithConvertedGrouped unit `shouldEqual` "a2|a1,b1"
 
   where

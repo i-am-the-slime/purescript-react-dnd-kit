@@ -67,7 +67,7 @@ spec = after_ cleanup do
       _ <- findByText "events"
       pure unit
 
-  describe "kanban with moveOnDrag" do
+  describe "kanban" do
     it "renders cards" do
       { findByText } <- render $ kanban { columnColor: "#1e293b", cardColor: "#334155", headerColor: "#fff" }
       result <- findByText "Design mockups"

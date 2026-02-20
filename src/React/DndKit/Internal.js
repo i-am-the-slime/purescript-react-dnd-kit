@@ -57,9 +57,7 @@ export function wrapHandlers(toMaybe, props) {
   const result = {};
   for (const key in props) {
     const converter = converters[key];
-    if (props[key] && props[key].__rawHandler) {
-      result[key] = props[key].__rawHandler;
-    } else if (converter && typeof props[key] === "function") {
+    if (converter && typeof props[key] === "function") {
       const original = props[key];
       result[key] = (event, manager) =>
         original(converter(toMaybe, event))(manager)();
