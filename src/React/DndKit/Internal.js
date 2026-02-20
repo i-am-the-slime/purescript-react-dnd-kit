@@ -17,6 +17,7 @@ function convertOperation(toMaybe, op) {
     transform: op.transform ?? zeroCoords,
     source: convertEntity(toMaybe, op.source),
     target: convertEntity(toMaybe, op.target),
+    __rawOp: op,
   };
 }
 
@@ -57,7 +58,6 @@ export function wrapHandlers(toMaybe, props) {
   for (const key in props) {
     const converter = converters[key];
     if (props[key] && props[key].__rawHandler) {
-      console.log("[wrapHandlers] detected __rawHandler for", key);
       result[key] = props[key].__rawHandler;
     } else if (converter && typeof props[key] === "function") {
       const original = props[key];

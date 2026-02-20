@@ -12,8 +12,10 @@ foreign import mockDragEvent :: String -> String -> Foreign
 foreign import testRawHandlerDetection :: Unit -> Boolean
 foreign import testRawHandlerCalled :: Unit -> Boolean
 foreign import testMoveOnDragImplShape :: Unit -> Boolean
-foreign import testMoveWithConvertedEvent :: Unit -> String
 foreign import testMoveOnDragEndToEnd :: Unit -> Foreign
+foreign import testDndMoveFailsWithConvertedEvent :: Unit -> Boolean
+foreign import testPsMoveWorksWithConvertedFlatArray :: Unit -> String
+foreign import testPsMoveWorksWithConvertedGrouped :: Unit -> String
 
 spec :: Spec Unit
 spec = do
@@ -68,11 +70,13 @@ spec = do
       let result = testMoveOnDragEndToEnd unit
       (unsafeCoerce result :: Boolean) `shouldEqual` true
 
-  describe "moveItems with converted event" do
-    it "move receives Maybe-wrapped source/target from convertOperation" do
-      let result = testMoveWithConvertedEvent unit
-      -- This will show us what moveItems actually sees
-      result `shouldEqual` "INSPECT"
+  describe "moveItems with converted events" do
+    it "@dnd-kit/helpers move() fails with Maybe-wrapped source/target" do
+      testDndMoveFailsWithConvertedEvent unit `shouldEqual` true
+    it "PureScript move() works with converted flat array via __rawOp" do
+      testPsMoveWorksWithConvertedFlatArray unit `shouldEqual` "b,c,a"
+    it "PureScript move() works with converted grouped record via __rawOp" do
+      testPsMoveWorksWithConvertedGrouped unit `shouldEqual` "a2|a1,b1"
 
   where
   asItems :: Array { id :: String } -> Foreign
