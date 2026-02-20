@@ -5,7 +5,7 @@ import Prelude hiding (div)
 import Data.Array (length, mapWithIndex)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import React.Basic (JSX)
+import React.Basic (JSX, keyed)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider)
 import React.DndKit.Helpers (moveItems)
@@ -70,7 +70,7 @@ type ColumnProps =
 
 column :: ColumnProps -> JSX
 column = component "Column" \props -> React.do
-  droppable <- useDroppable { id: DroppableId props.group, type: DragType "column", accept: DragType "item", collisionPriority: 0.0 }
+  droppable <- useDroppable { id: DroppableId props.group, type: DragType "column", accept: DragType "item", collisionPriority: -1.0 }
   pure $
     div { style: Styles.columnStyle props.columnColor }
       [ div { style: Styles.headerStyle }
@@ -79,7 +79,7 @@ column = component "Column" \props -> React.do
           ]
       , div { ref: callbackRef droppable.ref, style: Styles.listStyle }
           ( props.tasks # mapWithIndex \index task ->
-              card { id: task.id, title: task.title, index, group: props.group, cardColor: props.cardColor }
+              keyed task.id $ card { id: task.id, title: task.title, index, group: props.group, cardColor: props.cardColor }
           )
       ]
 
