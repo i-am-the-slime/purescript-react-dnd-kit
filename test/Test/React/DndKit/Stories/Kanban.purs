@@ -113,6 +113,6 @@ card = component "Card" \props -> React.do
       , exit: M.exit $ css { opacity: 0.0, scale: 0.8 }
       , transition: M.transition { duration: 0.2 }
       , ref: callbackRef result.ref
-      , style: unsafeCoerce (Styles.cardStyle props.cardColor cursor)
+      , style: unsafeCoerce (Styles.cardStyle props.cardColor cursor result.isDropTarget)
       , children: [ text props.title ]
       }
