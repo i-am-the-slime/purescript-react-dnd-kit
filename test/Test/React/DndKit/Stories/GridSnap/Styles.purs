@@ -3,7 +3,13 @@ module Test.React.DndKit.Stories.GridSnap.Styles where
 import Yoga.React.DOM.Internal (CSS, css)
 
 containerStyle :: CSS
-containerStyle = css { maxWidth: "380px", margin: "0 auto" }
+containerStyle = css
+  { maxWidth: "380px"
+  , margin: "0 auto"
+  , display: "grid"
+  , gridTemplateColumns: "repeat(3, 100px)"
+  , gap: "16px"
+  }
 
 tileStyle :: String -> String -> String -> String -> CSS
 tileStyle bg accent opacity cursor = css
