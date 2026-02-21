@@ -70,6 +70,9 @@
     "extra_packages": {
       "react-motion": {
         "path": "../purescript-framer-motion"
+      },
+      "yoga-stories": {
+        "path": "../purescript-yoga-stories"
       }
     }
   },
@@ -1668,9 +1671,8 @@
       ]
     },
     "yoga-stories": {
-      "type": "registry",
-      "version": "0.1.0",
-      "integrity": "sha256-8T+wUThPhXYH2MgSoe1/JjEmUnABk2A012wHliNLLcE=",
+      "type": "local",
+      "path": "../purescript-yoga-stories",
       "dependencies": [
         "aff",
         "arrays",

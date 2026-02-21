@@ -2,6 +2,8 @@ workspace:
   extraPackages:
     react-motion:
       path: ../purescript-framer-motion
+    yoga-stories:
+      path: ../purescript-yoga-stories
 
 package:
   name: react-dnd-kit
