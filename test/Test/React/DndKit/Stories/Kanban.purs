@@ -104,6 +104,7 @@ card = component "Card" \props -> React.do
   result <- useSortable { id: SortableId props.id, index: props.index, group: props.group, type: DragType "item", accept: DragType "item", feedback: clone }
   let opacity = if result.isDragging then 0.5 else 1.0
   let cursor = if result.isDragging then "grabbing" else "grab"
+  let indicator = if result.isDropTarget then div { style: Styles.dropIndicatorStyle } ([] :: Array JSX) else mempty
   pure $
     elementKeyed Motion.div
       { key: props.id
@@ -113,6 +114,6 @@ card = component "Card" \props -> React.do
       , exit: M.exit $ css { opacity: 0.0, scale: 0.8 }
       , transition: M.transition { duration: 0.2 }
       , ref: callbackRef result.ref
-      , style: unsafeCoerce (Styles.cardStyle props.cardColor cursor result.isDropTarget)
-      , children: [ text props.title ]
+      , style: unsafeCoerce (Styles.cardStyle props.cardColor cursor)
+      , children: [ indicator, text props.title ]
       }

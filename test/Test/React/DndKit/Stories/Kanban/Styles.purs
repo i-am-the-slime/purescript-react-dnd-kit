@@ -42,8 +42,8 @@ countStyle = css
 listStyle :: CSS
 listStyle = css { display: "flex", flexDirection: "column", gap: "8px", flex: "1", minHeight: "60px" }
 
-cardStyle :: String -> String -> Boolean -> CSS
-cardStyle bg cursor isDropTarget = css
+cardStyle :: String -> String -> CSS
+cardStyle bg cursor = css
   { padding: "10px 12px"
   , backgroundColor: bg
   , borderRadius: "8px"
@@ -53,8 +53,18 @@ cardStyle bg cursor isDropTarget = css
   , userSelect: "none"
   , boxShadow: "0 1px 3px rgba(0,0,0,0.2)"
   , position: "relative"
-  , borderTop: if isDropTarget then "3px solid #3b82f6" else "3px solid transparent"
-  , transition: "border-color 150ms"
+  }
+
+dropIndicatorStyle :: CSS
+dropIndicatorStyle = css
+  { position: "absolute"
+  , top: "-6px"
+  , left: "0"
+  , right: "0"
+  , height: "3px"
+  , backgroundColor: "#3b82f6"
+  , borderRadius: "2px"
+  , pointerEvents: "none"
   }
 
 -- Simple brightening by adding alpha overlay
