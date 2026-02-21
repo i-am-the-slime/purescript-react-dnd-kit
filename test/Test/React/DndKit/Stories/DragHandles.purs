@@ -26,25 +26,31 @@ type Props =
 
 dragHandles :: Props -> JSX
 dragHandles = component "DragHandles" \props -> React.do
-  let initialItems = range 1 props.itemCount <#> \i ->
+  let makeItems n = range 1 n <#> \i ->
         { id: "item-" <> show i
         , title: "Task " <> show i
         , description: "Description for task " <> show i
         }
   let modifiers = axisModifier props.lockAxis
-  items /\ setItems <- React.useState initialItems
+  items /\ setItems <- React.useState (makeItems props.itemCount)
+  React.useEffect props.itemCount do
+    setItems \_ -> makeItems props.itemCount
+    pure (pure unit)
   let
     onDragEnd :: DragEndEvent -> DragDropManager -> Effect Unit
     onDragEnd event _ = setItems \current -> moveItems current event
-  pure $ div { style: Styles.containerStyle } do
-    dragDropProvider { onDragEnd, modifiers } do
-      items # mapWithIndex \index item ->
-        keyed item.id $ handleCard
-          { id: item.id
-          , title: item.title
-          , description: item.description
-          , index
-          }
+  let reset = setItems \_ -> makeItems props.itemCount
+  pure $ div { style: Styles.containerStyle }
+    [ dragDropProvider { onDragEnd, modifiers } do
+        items # mapWithIndex \index item ->
+          keyed item.id $ handleCard
+            { id: item.id
+            , title: item.title
+            , description: item.description
+            , index
+            }
+    , button { style: Styles.resetStyle, onClick: handler_ reset } (text "Reset")
+    ]
 
 axisModifier :: String -> Array Modifier
 axisModifier = case _ of

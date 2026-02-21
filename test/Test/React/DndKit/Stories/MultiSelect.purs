@@ -10,14 +10,14 @@ import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import React.Basic (JSX)
 import React.Basic.DOM.Events (metaKey, shiftKey)
-import React.Basic.Events (handler, merge)
+import React.Basic.Events (handler, handler_, merge)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider, dragOverlay_)
 import React.DndKit.Hooks (useDragOperation, useDraggable, useDroppable)
 import React.DndKit.Types (DragDropManager, DragEndEvent, DragType(..), DraggableId(..), DroppableId(..), callbackRef, clone)
 import Test.React.DndKit.Stories.MultiSelect.Styles as Styles
 import Yoga.React (component)
-import Yoga.React.DOM.HTML (div, span)
+import Yoga.React.DOM.HTML (button, div, span)
 import Yoga.React.DOM.Internal (text)
 
 type Props =
@@ -29,11 +29,16 @@ type Item = { id :: String, label :: String }
 
 multiSelect :: Props -> JSX
 multiSelect = component "MultiSelect" \props -> React.do
-  let initialItems = range 1 props.itemCount <#> \i -> { id: "item-" <> show i, label: "Item " <> show i }
-  source /\ setSource <- React.useState initialItems
+  let makeItems n = range 1 n <#> \i -> { id: "item-" <> show i, label: "Item " <> show i }
+  source /\ setSource <- React.useState (makeItems props.itemCount)
   target /\ setTarget <- React.useState ([] :: Array Item)
   selected /\ setSelected <- React.useState (Set.empty :: Set.Set String)
   lastClicked /\ setLastClicked <- React.useState (Nothing :: Maybe String)
+  React.useEffect props.itemCount do
+    setSource \_ -> makeItems props.itemCount
+    setTarget \_ -> []
+    setSelected \_ -> Set.empty
+    pure (pure unit)
   let
     handleClick id mods = do
       let isShift = fromMaybe false mods.shiftKey
@@ -71,24 +76,30 @@ multiSelect = component "MultiSelect" \props -> React.do
           Nothing -> pure unit
       _ -> pure unit
 
-  pure $ div { style: Styles.layoutStyle } do
-    dragDropProvider { onDragEnd }
-      [ div { style: Styles.sectionStyle }
-          [ div { style: Styles.labelStyle } (text "Source")
-          , div { style: Styles.gridStyle props.gridColumns }
-              ( source <#> \item ->
-                  selectableItem
-                    { id: item.id
-                    , label: item.label
-                    , isSelected: Set.member item.id selected
-                    , onClick: handleClick item.id
-                    , selectedColor: "#4f46e5"
-                    }
-              )
-          ]
-      , dropTarget { items: target }
-      , selectionOverlay { source, selected }
-      ]
+  let reset = do
+        setSource \_ -> makeItems props.itemCount
+        setTarget \_ -> []
+        setSelected \_ -> Set.empty
+  pure $ div { style: Styles.layoutStyle }
+    [ dragDropProvider { onDragEnd }
+        [ div { style: Styles.sectionStyle }
+            [ div { style: Styles.labelStyle } (text "Source")
+            , div { style: Styles.gridStyle props.gridColumns }
+                ( source <#> \item ->
+                    selectableItem
+                      { id: item.id
+                      , label: item.label
+                      , isSelected: Set.member item.id selected
+                      , onClick: handleClick item.id
+                      , selectedColor: "#4f46e5"
+                      }
+                )
+            ]
+        , dropTarget { items: target }
+        , selectionOverlay { source, selected }
+        ]
+    , button { style: Styles.resetStyle, onClick: handler_ reset } (text "Reset")
+    ]
 
 type SelectableItemProps =
   { id :: String

@@ -86,3 +86,15 @@ badgeStyle = css
   , fontSize: "12px"
   , fontWeight: "600"
   }
+
+resetStyle :: CSS
+resetStyle = css
+  { backgroundColor: "transparent"
+  , border: "1px solid #475569"
+  , borderRadius: "6px"
+  , color: "#94a3b8"
+  , padding: "6px 16px"
+  , fontSize: "12px"
+  , cursor: "pointer"
+  , marginTop: "12px"
+  }

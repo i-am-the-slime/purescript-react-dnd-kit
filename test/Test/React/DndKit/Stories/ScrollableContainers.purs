@@ -6,6 +6,7 @@ import Data.Array (length, mapWithIndex, range)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
 import React.Basic (JSX, keyed)
+import React.Basic.Events (handler_)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider)
 import React.DndKit.Helpers (moveItems)
@@ -15,7 +16,7 @@ import React.DndKit.Sortable (SortableId(..), useSortable)
 import React.DndKit.Types (DragDropManager, DragOverEvent, DragType(..), DroppableId(..), FeedbackType, callbackRef, clone, move)
 import Test.React.DndKit.Stories.ScrollableContainers.Styles as Styles
 import Yoga.React (component)
-import Yoga.React.DOM.HTML (div, span)
+import Yoga.React.DOM.HTML (button, div, span)
 import Yoga.React.DOM.Internal (text)
 
 type Props =
@@ -33,20 +34,27 @@ type Columns =
 
 scrollableContainers :: Props -> JSX
 scrollableContainers = component "ScrollableContainers" \props -> React.do
-  let initialColumns =
-        { left: range 1 props.itemsPerColumn <#> \i -> { id: "left-" <> show i, label: "Left Item " <> show i }
-        , right: range 1 props.itemsPerColumn <#> \i -> { id: "right-" <> show i, label: "Right Item " <> show i }
+  let makeCols n =
+        { left: range 1 n <#> \i -> { id: "left-" <> show i, label: "Left Item " <> show i }
+        , right: range 1 n <#> \i -> { id: "right-" <> show i, label: "Right Item " <> show i }
         }
-  columns /\ setColumns <- React.useState initialColumns
+  columns /\ setColumns <- React.useState (makeCols props.itemsPerColumn)
+  React.useEffect props.itemsPerColumn do
+    setColumns \_ -> makeCols props.itemsPerColumn
+    pure (pure unit)
   let
     onDragOver :: DragOverEvent -> DragDropManager -> Effect Unit
     onDragOver event _ = setColumns \cols -> moveItems cols event
     plugins = [ feedback, autoScroller, cursor, accessibility, preventSelection ]
-  pure $ div { style: Styles.layoutStyle } do
-    dragDropProvider { onDragOver, plugins }
-      [ scrollColumn { name: "Left", group: "left", items: columns.left, containerHeight: props.containerHeight, feedback: props.feedback }
-      , scrollColumn { name: "Right", group: "right", items: columns.right, containerHeight: props.containerHeight, feedback: props.feedback }
-      ]
+  let reset = setColumns \_ -> makeCols props.itemsPerColumn
+  pure $ div {}
+    [ div { style: Styles.layoutStyle } do
+        dragDropProvider { onDragOver, plugins }
+          [ scrollColumn { name: "Left", group: "left", items: columns.left, containerHeight: props.containerHeight, feedback: props.feedback }
+          , scrollColumn { name: "Right", group: "right", items: columns.right, containerHeight: props.containerHeight, feedback: props.feedback }
+          ]
+    , button { style: Styles.resetStyle, onClick: handler_ reset } (text "Reset")
+    ]
 
 type ColumnProps =
   { name :: String
