@@ -10,18 +10,16 @@ containerStyle = css { maxWidth: "500px", margin: "0 auto" }
 gridStyle :: CSS
 gridStyle = css { display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "20px" }
 
-cardStyle :: String -> String -> String -> CSS
-cardStyle bg opacity cursor = css
+cardStyle :: String -> CSS
+cardStyle bg = css
   { padding: "16px 20px"
   , backgroundColor: bg
   , borderRadius: "8px"
   , color: "white"
   , fontSize: "14px"
   , fontWeight: "500"
-  , cursor
-  , opacity
+  , cursor: "grab"
   , userSelect: "none"
-  , transition: "opacity 200ms"
   }
 
 zoneStyle :: String -> String -> String -> Boolean -> CSS

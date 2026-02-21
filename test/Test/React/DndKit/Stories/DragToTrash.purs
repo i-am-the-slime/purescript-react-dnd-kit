@@ -7,15 +7,21 @@ import Data.Maybe (Maybe(..), isJust)
 import Data.Newtype (un)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import React.Basic (JSX, keyed)
+import Framer.Motion (animatePresence)
+import Framer.Motion.MotionComponent as Motion
+import Framer.Motion.Types (animate, exit, initial, layout, transition) as M
+import React.Basic (JSX, element, elementKeyed, keyed)
+import React.Basic.DOM (css)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider)
 import React.DndKit.Hooks (useDragOperation, useDraggable, useDroppable)
 import React.DndKit.Plugins (configureFeedback, noDropAnimation)
 import React.DndKit.Types (DragEndEvent, DragDropManager, DraggableId(..), DroppableId(..), callbackRef)
 import Test.React.DndKit.Stories.DragToTrash.Styles as Styles
+import Unsafe.Coerce (unsafeCoerce)
 import Yoga.React (component)
 import Yoga.React.DOM.HTML (div)
+import Yoga.React.DOM.Internal (text)
 
 type Props =
   { cardColor :: String
@@ -38,10 +44,14 @@ dragToTrash = component "DragToTrash" \props -> React.do
     plugins = [ configureFeedback { dropAnimation: noDropAnimation } ]
   pure $ div { style: Styles.containerStyle } do
     dragDropProvider { onDragEnd, plugins }
-      [ div { style: Styles.gridStyle }
-          ( items <#> \item ->
-              keyed item.id $ draggableCard { id: item.id, label: item.label, cardColor: props.cardColor }
-          )
+      [ element animatePresence
+          { children:
+              [ div { style: Styles.gridStyle }
+                  ( items <#> \item ->
+                      keyed item.id $ draggableCard { id: item.id, label: item.label, cardColor: props.cardColor }
+                  )
+              ]
+          }
       , trashZone { trashColor: props.trashColor }
       ]
 
@@ -54,11 +64,19 @@ type CardProps =
 draggableCard :: CardProps -> JSX
 draggableCard = component "DraggableCard" \props -> React.do
   result <- useDraggable { id: DraggableId props.id }
-  let opacity = if result.isDragging then "0.4" else "1"
-  let cursor = if result.isDragging then "grabbing" else "grab"
+  let opacity = if result.isDragging then 0.4 else 1.0
   pure $
-    div { ref: callbackRef result.ref, style: Styles.cardStyle props.cardColor opacity cursor }
-      props.label
+    elementKeyed Motion.div
+      { key: props.id
+      , layout: M.layout true
+      , initial: M.initial $ css { opacity: 0.0, scale: 0.8 }
+      , animate: M.animate $ css { opacity, scale: 1.0 }
+      , exit: M.exit $ css { opacity: 0.0, scale: 0.8 }
+      , transition: M.transition { duration: 0.2 }
+      , ref: callbackRef result.ref
+      , style: unsafeCoerce (Styles.cardStyle props.cardColor)
+      , children: [ text props.label ]
+      }
 
 type TrashProps = { trashColor :: String }
 
