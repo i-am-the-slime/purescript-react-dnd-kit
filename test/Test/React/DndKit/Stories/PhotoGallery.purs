@@ -5,7 +5,7 @@ import Prelude hiding (div)
 import Data.Array (mapWithIndex)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import React.Basic (JSX)
+import React.Basic (JSX, keyed)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider)
 import React.DndKit.Helpers (moveItems)
@@ -34,7 +34,7 @@ photoGallery = component "PhotoGallery" \props -> React.do
     dragDropProvider { onDragEnd, modifiers: [ restrictToHorizontalAxis ] }
       [ div { style: Styles.galleryStyle }
           ( photos # mapWithIndex \index photo ->
-              photoCard { id: photo.id, label: photo.label, index, thumbColor: props.thumbColor, labelColor: props.labelColor }
+              keyed photo.id $ photoCard { id: photo.id, label: photo.label, index, thumbColor: props.thumbColor, labelColor: props.labelColor }
           )
       ]
   where

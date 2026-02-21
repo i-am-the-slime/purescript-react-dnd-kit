@@ -5,7 +5,7 @@ import Prelude hiding (div)
 import Data.Array (mapWithIndex, range)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import React.Basic (JSX)
+import React.Basic (JSX, keyed)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider)
 import React.DndKit.Helpers (moveItems)
@@ -35,7 +35,7 @@ keyboardNav = component "KeyboardNav" \props -> React.do
         (text "Tab to focus \x2022 Space to grab \x2022 Arrows to move \x2022 Space to drop \x2022 Esc to cancel")
     , dragDropProvider { onDragEnd, sensors: [ pointerSensorDefault, keyboardSensorDefault ] }
         ( items # mapWithIndex \index item ->
-            navItem { id: item.id, label: item.label, index, itemColor: props.itemColor, activeColor: props.activeColor }
+            keyed item.id $ navItem { id: item.id, label: item.label, index, itemColor: props.itemColor, activeColor: props.activeColor }
         )
     ]
   where

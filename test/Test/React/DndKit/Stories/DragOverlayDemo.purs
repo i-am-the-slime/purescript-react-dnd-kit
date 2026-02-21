@@ -7,7 +7,7 @@ import Data.Maybe (Maybe(..))
 import Data.Newtype (un)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import React.Basic (JSX)
+import React.Basic (JSX, keyed)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider, dragOverlay_)
 import React.DndKit.Helpers (moveItems)
@@ -36,7 +36,7 @@ dragOverlayDemo = component "DragOverlayDemo" \props -> React.do
     dragDropProvider { onDragEnd }
       [ div { style: Styles.listStyle }
           ( items # mapWithIndex \index item ->
-              overlayItem { id: item.id, label: item.label, index, itemColor: props.itemColor }
+              keyed item.id $ overlayItem { id: item.id, label: item.label, index, itemColor: props.itemColor }
           )
       , activeOverlay { items, overlayColor: props.overlayColor }
       ]
