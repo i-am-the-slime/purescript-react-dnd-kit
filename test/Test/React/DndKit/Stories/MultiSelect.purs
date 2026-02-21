@@ -21,9 +21,7 @@ import Yoga.React.DOM.HTML (div, span)
 import Yoga.React.DOM.Internal (text)
 
 type Props =
-  { selectedColor :: String
-  , targetColor :: String
-  , itemCount :: Int
+  { itemCount :: Int
   , gridColumns :: Int
   }
 
@@ -84,12 +82,12 @@ multiSelect = component "MultiSelect" \props -> React.do
                     , label: item.label
                     , isSelected: Set.member item.id selected
                     , onClick: handleClick item.id
-                    , selectedColor: props.selectedColor
+                    , selectedColor: "#4f46e5"
                     }
               )
           ]
-      , dropTarget { items: target, targetColor: props.targetColor }
-      , selectionOverlay { source, selected, selectedColor: props.selectedColor }
+      , dropTarget { items: target }
+      , selectionOverlay { source, selected }
       ]
 
 type SelectableItemProps =
@@ -104,6 +102,7 @@ selectableItem :: SelectableItemProps -> JSX
 selectableItem = component "SelectableItem" \props -> React.do
   result <- useDraggable { id: DraggableId props.id, type: DragType "item", feedback: clone }
   let bg = if props.isSelected then props.selectedColor else "#334155"
+
   let opacity = if result.isDragging then "0.4" else "1"
   pure $
     div
@@ -117,14 +116,13 @@ selectableItem = component "SelectableItem" \props -> React.do
 
 type DropTargetProps =
   { items :: Array Item
-  , targetColor :: String
   }
 
 dropTarget :: DropTargetProps -> JSX
 dropTarget = component "DropTarget" \props -> React.do
   result <- useDroppable { id: DroppableId "target-zone", accept: DragType "item" }
-  let bg = if result.isDropTarget then props.targetColor else "#1e293b"
-  let border = if result.isDropTarget then "2px solid " <> props.targetColor else "2px dashed #475569"
+  let bg = if result.isDropTarget then "#065f46" else "#1e293b"
+  let border = if result.isDropTarget then "2px solid #065f46" else "2px dashed #475569"
   pure $
     div { style: Styles.sectionStyle }
       [ div { style: Styles.labelStyle } (text "Target")
@@ -139,7 +137,6 @@ dropTarget = component "DropTarget" \props -> React.do
 type OverlayProps =
   { source :: Array Item
   , selected :: Set.Set String
-  , selectedColor :: String
   }
 
 selectionOverlay :: OverlayProps -> JSX
@@ -150,7 +147,7 @@ selectionOverlay = component "SelectionOverlay" \props -> React.do
     Just dragId -> do
       let count = if Set.member dragId props.selected then Set.size props.selected else 1
       dragOverlay_ $
-        div { style: Styles.overlayStyle props.selectedColor }
+        div { style: Styles.overlayStyle }
           [ text (if count == 1 then "1 item" else show count <> " items")
           , if count > 1
             then span { style: Styles.badgeStyle } (text (show count))

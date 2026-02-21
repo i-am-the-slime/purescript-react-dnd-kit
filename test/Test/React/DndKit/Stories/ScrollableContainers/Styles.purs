@@ -49,10 +49,10 @@ scrollAreaStyle isTarget height = css
   , transition: "border-color 200ms"
   }
 
-itemStyle :: String -> String -> String -> CSS
-itemStyle bg opacity cursor = css
+itemStyle :: String -> String -> CSS
+itemStyle opacity cursor = css
   { padding: "10px 12px"
-  , backgroundColor: bg
+  , backgroundColor: "#334155"
   , borderRadius: "8px"
   , color: "white"
   , fontSize: "13px"

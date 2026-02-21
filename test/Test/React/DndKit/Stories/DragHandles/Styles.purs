@@ -38,9 +38,9 @@ titleStyle = css { fontSize: "14px", fontWeight: "600" }
 descriptionStyle :: CSS
 descriptionStyle = css { fontSize: "12px", opacity: "0.7", marginTop: "2px" }
 
-buttonStyle :: String -> CSS
-buttonStyle accent = css
-  { backgroundColor: accent
+buttonStyle :: CSS
+buttonStyle = css
+  { backgroundColor: "#6366f1"
   , border: "none"
   , borderRadius: "6px"
   , color: "white"

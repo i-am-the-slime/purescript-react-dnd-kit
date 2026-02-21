@@ -64,9 +64,9 @@ targetItemStyle = css
 emptyStyle :: CSS
 emptyStyle = css { color: "rgba(255,255,255,0.5)", fontSize: "14px", margin: "auto" }
 
-overlayStyle :: String -> CSS
-overlayStyle bg = css
-  { backgroundColor: bg
+overlayStyle :: CSS
+overlayStyle = css
+  { backgroundColor: "#4f46e5"
   , borderRadius: "8px"
   , padding: "12px 20px"
   , color: "white"

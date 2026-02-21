@@ -12,16 +12,16 @@ import React.DndKit.Helpers (moveItems)
 import React.DndKit.Hooks (useDroppable)
 import React.DndKit.Plugins (accessibility, autoScroller, cursor, feedback, preventSelection)
 import React.DndKit.Sortable (SortableId(..), useSortable)
-import React.DndKit.Types (DragDropManager, DragOverEvent, DragType(..), DroppableId(..), callbackRef, clone)
+import React.DndKit.Types (DragDropManager, DragOverEvent, DragType(..), DroppableId(..), FeedbackType, callbackRef, clone, move)
 import Test.React.DndKit.Stories.ScrollableContainers.Styles as Styles
 import Yoga.React (component)
 import Yoga.React.DOM.HTML (div, span)
 import Yoga.React.DOM.Internal (text)
 
 type Props =
-  { itemColor :: String
-  , itemsPerColumn :: Int
+  { itemsPerColumn :: Int
   , containerHeight :: Int
+  , feedback :: String
   }
 
 type Item = { id :: String, label :: String }
@@ -44,23 +44,23 @@ scrollableContainers = component "ScrollableContainers" \props -> React.do
     plugins = [ feedback, autoScroller, cursor, accessibility, preventSelection ]
   pure $ div { style: Styles.layoutStyle } do
     dragDropProvider { onDragOver, plugins }
-      [ scrollColumn { name: "Left", group: "left", items: columns.left, itemColor: props.itemColor, containerHeight: props.containerHeight }
-      , scrollColumn { name: "Right", group: "right", items: columns.right, itemColor: props.itemColor, containerHeight: props.containerHeight }
+      [ scrollColumn { name: "Left", group: "left", items: columns.left, containerHeight: props.containerHeight, feedback: props.feedback }
+      , scrollColumn { name: "Right", group: "right", items: columns.right, containerHeight: props.containerHeight, feedback: props.feedback }
       ]
 
 type ColumnProps =
   { name :: String
   , group :: String
   , items :: Array Item
-  , itemColor :: String
   , containerHeight :: Int
+  , feedback :: String
   }
 
 scrollColumn :: ColumnProps -> JSX
 scrollColumn = component "ScrollColumn" \props -> React.do
   droppable <- useDroppable { id: DroppableId props.group, type: DragType "column", accept: DragType "item", collisionPriority: -1.0 }
   let items = props.items # mapWithIndex \index item ->
-        keyed item.id $ scrollItem { id: item.id, label: item.label, index, group: props.group, itemColor: props.itemColor }
+        keyed item.id $ scrollItem { id: item.id, label: item.label, index, group: props.group, feedback: props.feedback }
   pure $
     div { style: Styles.columnStyle }
       [ div { style: Styles.headerStyle }
@@ -75,16 +75,21 @@ type ItemProps =
   , label :: String
   , index :: Int
   , group :: String
-  , itemColor :: String
+  , feedback :: String
   }
 
 scrollItem :: ItemProps -> JSX
 scrollItem = component "ScrollItem" \props -> React.do
-  result <- useSortable { id: SortableId props.id, index: props.index, group: props.group, type: DragType "item", accept: DragType "item", feedback: clone }
+  result <- useSortable { id: SortableId props.id, index: props.index, group: props.group, type: DragType "item", accept: DragType "item", feedback: parseFeedback props.feedback }
   let opacity = if result.isDragging then "0.4" else "1"
   let cursor = if result.isDragging then "grabbing" else "grab"
   pure $
-    div { ref: callbackRef result.ref, style: Styles.itemStyle props.itemColor opacity cursor }
+    div { ref: callbackRef result.ref, style: Styles.itemStyle opacity cursor }
       [ span { style: Styles.handleStyle } "⠿"
       , text props.label
       ]
+
+parseFeedback :: String -> FeedbackType
+parseFeedback = case _ of
+  "move" -> move
+  _ -> clone
