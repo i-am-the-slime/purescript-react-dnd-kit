@@ -1,5 +1,7 @@
 module Test.React.DndKit.Stories.MultiSelect.Styles where
 
+import Prelude
+
 import Yoga.React.DOM.Internal (CSS, css)
 
 layoutStyle :: CSS
@@ -11,10 +13,10 @@ sectionStyle = css {}
 labelStyle :: CSS
 labelStyle = css { color: "white", fontSize: "14px", fontWeight: "600", marginBottom: "8px" }
 
-gridStyle :: CSS
-gridStyle = css
+gridStyle :: Int -> CSS
+gridStyle cols = css
   { display: "grid"
-  , gridTemplateColumns: "repeat(4, 1fr)"
+  , gridTemplateColumns: "repeat(" <> show cols <> ", 1fr)"
   , gap: "8px"
   }
 

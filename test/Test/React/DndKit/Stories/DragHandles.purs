@@ -20,12 +20,17 @@ import Yoga.React.DOM.Internal (text)
 
 type Props =
   { itemColor :: String
-  , dragColor :: String
   , accentColor :: String
+  , itemCount :: Int
   }
 
 dragHandles :: Props -> JSX
 dragHandles = component "DragHandles" \props -> React.do
+  let initialItems = range 1 props.itemCount <#> \i ->
+        { id: "item-" <> show i
+        , title: "Task " <> show i
+        , description: "Description for task " <> show i
+        }
   items /\ setItems <- React.useState initialItems
   let
     onDragEnd :: DragEndEvent -> DragDropManager -> Effect Unit
@@ -39,15 +44,8 @@ dragHandles = component "DragHandles" \props -> React.do
           , description: item.description
           , index
           , itemColor: props.itemColor
-          , dragColor: props.dragColor
           , accentColor: props.accentColor
           }
-  where
-  initialItems = range 1 5 <#> \i ->
-    { id: "item-" <> show i
-    , title: "Task " <> show i
-    , description: "Description for task " <> show i
-    }
 
 type CardProps =
   { id :: String
@@ -55,14 +53,13 @@ type CardProps =
   , description :: String
   , index :: Int
   , itemColor :: String
-  , dragColor :: String
   , accentColor :: String
   }
 
 handleCard :: CardProps -> JSX
 handleCard = component "HandleCard" \props -> React.do
   result <- useSortable { id: SortableId props.id, index: props.index }
-  let bg = if result.isDragging then props.dragColor else props.itemColor
+  let bg = if result.isDragging then "rgba(255,255,255,0.1)" else props.itemColor
   let opacity = if result.isDragging then "0.8" else "1"
   pure $
     div { ref: callbackRef result.ref, style: Styles.cardStyle bg opacity }

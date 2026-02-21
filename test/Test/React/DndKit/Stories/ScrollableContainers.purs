@@ -19,9 +19,9 @@ import Yoga.React.DOM.HTML (div, span)
 import Yoga.React.DOM.Internal (text)
 
 type Props =
-  { columnColor :: String
-  , itemColor :: String
-  , headerColor :: String
+  { itemColor :: String
+  , itemsPerColumn :: Int
+  , containerHeight :: Int
   }
 
 type Item = { id :: String, label :: String }
@@ -33,6 +33,10 @@ type Columns =
 
 scrollableContainers :: Props -> JSX
 scrollableContainers = component "ScrollableContainers" \props -> React.do
+  let initialColumns =
+        { left: range 1 props.itemsPerColumn <#> \i -> { id: "left-" <> show i, label: "Left Item " <> show i }
+        , right: range 1 props.itemsPerColumn <#> \i -> { id: "right-" <> show i, label: "Right Item " <> show i }
+        }
   columns /\ setColumns <- React.useState initialColumns
   let
     onDragOver :: DragOverEvent -> DragDropManager -> Effect Unit
@@ -40,22 +44,16 @@ scrollableContainers = component "ScrollableContainers" \props -> React.do
     plugins = [ feedback, autoScroller, cursor, accessibility, preventSelection ]
   pure $ div { style: Styles.layoutStyle } do
     dragDropProvider { onDragOver, plugins }
-      [ scrollColumn { name: "Left", group: "left", items: columns.left, columnColor: props.columnColor, itemColor: props.itemColor, headerColor: props.headerColor }
-      , scrollColumn { name: "Right", group: "right", items: columns.right, columnColor: props.columnColor, itemColor: props.itemColor, headerColor: props.headerColor }
+      [ scrollColumn { name: "Left", group: "left", items: columns.left, itemColor: props.itemColor, containerHeight: props.containerHeight }
+      , scrollColumn { name: "Right", group: "right", items: columns.right, itemColor: props.itemColor, containerHeight: props.containerHeight }
       ]
-  where
-  initialColumns =
-    { left: range 1 20 <#> \i -> { id: "left-" <> show i, label: "Left Item " <> show i }
-    , right: range 1 20 <#> \i -> { id: "right-" <> show i, label: "Right Item " <> show i }
-    }
 
 type ColumnProps =
   { name :: String
   , group :: String
   , items :: Array Item
-  , columnColor :: String
   , itemColor :: String
-  , headerColor :: String
+  , containerHeight :: Int
   }
 
 scrollColumn :: ColumnProps -> JSX
@@ -64,12 +62,12 @@ scrollColumn = component "ScrollColumn" \props -> React.do
   let items = props.items # mapWithIndex \index item ->
         keyed item.id $ scrollItem { id: item.id, label: item.label, index, group: props.group, itemColor: props.itemColor }
   pure $
-    div { style: Styles.columnStyle props.columnColor }
+    div { style: Styles.columnStyle }
       [ div { style: Styles.headerStyle }
-          [ span { style: Styles.titleStyle props.headerColor } (text props.name)
+          [ span { style: Styles.titleStyle } (text props.name)
           , span { style: Styles.countStyle } (text (show (length props.items)))
           ]
-      , div { ref: callbackRef droppable.ref, style: Styles.scrollAreaStyle droppable.isDropTarget } items
+      , div { ref: callbackRef droppable.ref, style: Styles.scrollAreaStyle droppable.isDropTarget props.containerHeight } items
       ]
 
 type ItemProps =

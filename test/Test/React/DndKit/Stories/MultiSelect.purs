@@ -21,15 +21,17 @@ import Yoga.React.DOM.HTML (div, span)
 import Yoga.React.DOM.Internal (text)
 
 type Props =
-  { itemColor :: String
-  , selectedColor :: String
+  { selectedColor :: String
   , targetColor :: String
+  , itemCount :: Int
+  , gridColumns :: Int
   }
 
 type Item = { id :: String, label :: String }
 
 multiSelect :: Props -> JSX
 multiSelect = component "MultiSelect" \props -> React.do
+  let initialItems = range 1 props.itemCount <#> \i -> { id: "item-" <> show i, label: "Item " <> show i }
   source /\ setSource <- React.useState initialItems
   target /\ setTarget <- React.useState ([] :: Array Item)
   selected /\ setSelected <- React.useState (Set.empty :: Set.Set String)
@@ -75,14 +77,13 @@ multiSelect = component "MultiSelect" \props -> React.do
     dragDropProvider { onDragEnd }
       [ div { style: Styles.sectionStyle }
           [ div { style: Styles.labelStyle } (text "Source")
-          , div { style: Styles.gridStyle }
+          , div { style: Styles.gridStyle props.gridColumns }
               ( source <#> \item ->
                   selectableItem
                     { id: item.id
                     , label: item.label
                     , isSelected: Set.member item.id selected
                     , onClick: handleClick item.id
-                    , itemColor: props.itemColor
                     , selectedColor: props.selectedColor
                     }
               )
@@ -90,23 +91,19 @@ multiSelect = component "MultiSelect" \props -> React.do
       , dropTarget { items: target, targetColor: props.targetColor }
       , selectionOverlay { source, selected, selectedColor: props.selectedColor }
       ]
-  where
-  initialItems = range 1 12 <#> \i ->
-    { id: "item-" <> show i, label: "Item " <> show i }
 
 type SelectableItemProps =
   { id :: String
   , label :: String
   , isSelected :: Boolean
   , onClick :: { shiftKey :: Maybe Boolean, metaKey :: Maybe Boolean } -> Effect Unit
-  , itemColor :: String
   , selectedColor :: String
   }
 
 selectableItem :: SelectableItemProps -> JSX
 selectableItem = component "SelectableItem" \props -> React.do
   result <- useDraggable { id: DraggableId props.id, type: DragType "item", feedback: clone }
-  let bg = if props.isSelected then props.selectedColor else props.itemColor
+  let bg = if props.isSelected then props.selectedColor else "#334155"
   let opacity = if result.isDragging then "0.4" else "1"
   pure $
     div

@@ -8,6 +8,6 @@ import YogaStories.Story (story)
 default :: JSX
 default = story "default" dragHandles
   { itemColor: color "#334155"
-  , dragColor: color "#475569"
   , accentColor: color "#6366f1"
+  , itemCount: 5
   }

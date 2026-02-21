@@ -20,9 +20,8 @@ import Yoga.React.DOM.HTML (div, span)
 import Yoga.React.DOM.Internal (text)
 
 type Props =
-  { folderColor :: String
-  , fileColor :: String
-  , dropHighlight :: String
+  { highlightColor :: String
+  , indentSize :: Int
   }
 
 type FileNode =
@@ -56,9 +55,8 @@ fileManager = component "FileManager" \props -> React.do
           , depth
           , isExpanded: Set.member node.id expanded
           , onToggle: toggle node.id
-          , folderColor: props.folderColor
-          , fileColor: props.fileColor
-          , dropHighlight: props.dropHighlight
+          , highlightColor: props.highlightColor
+          , indentSize: props.indentSize
           }
 
 type VisibleNode = { node :: FileNode, depth :: Int }
@@ -79,9 +77,8 @@ type TreeNodeProps =
   , depth :: Int
   , isExpanded :: Boolean
   , onToggle :: Effect Unit
-  , folderColor :: String
-  , fileColor :: String
-  , dropHighlight :: String
+  , highlightColor :: String
+  , indentSize :: Int
   }
 
 treeNode :: TreeNodeProps -> JSX
@@ -95,9 +92,9 @@ folderNode = component "FolderNode" \props -> React.do
   draggable <- useDraggable { id: DraggableId props.node.id, type: DragType "node" }
   droppable <- useDroppable { id: DroppableId props.node.id, accept: DragType "node" }
   let icon = if props.isExpanded then "📂" else "📁"
-  let bg = if droppable.isDropTarget then props.dropHighlight else props.folderColor
+  let bg = if droppable.isDropTarget then props.highlightColor else "#1e293b"
   let opacity = if draggable.isDragging then "0.4" else "1"
-  let indent = show (props.depth * 24) <> "px"
+  let indent = show (props.depth * props.indentSize) <> "px"
   pure $
     div { ref: callbackRef droppable.ref, style: Styles.nodeStyle bg opacity indent }
       [ div { ref: callbackRef draggable.ref, style: Styles.nodeContentStyle, onClick: handler_ props.onToggle }
@@ -110,9 +107,9 @@ fileNode :: TreeNodeProps -> JSX
 fileNode = component "FileNode" \props -> React.do
   draggable <- useDraggable { id: DraggableId props.node.id, type: DragType "node" }
   let opacity = if draggable.isDragging then "0.4" else "1"
-  let indent = show (props.depth * 24) <> "px"
+  let indent = show (props.depth * props.indentSize) <> "px"
   pure $
-    div { ref: callbackRef draggable.ref, style: Styles.nodeStyle props.fileColor opacity indent }
+    div { ref: callbackRef draggable.ref, style: Styles.nodeStyle "transparent" opacity indent }
       [ div { style: Styles.nodeContentStyle }
           [ span { style: Styles.iconStyle } (text "📄")
           , span { style: Styles.nameStyle } (text props.node.name)

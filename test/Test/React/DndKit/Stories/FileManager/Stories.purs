@@ -7,7 +7,6 @@ import YogaStories.Story (story)
 
 default :: JSX
 default = story "default" fileManager
-  { folderColor: color "#1e293b"
-  , fileColor: color "transparent"
-  , dropHighlight: color "#1e3a5f"
+  { highlightColor: color "#1e3a5f"
+  , indentSize: 24
   }

@@ -1,14 +1,16 @@
 module Test.React.DndKit.Stories.ScrollableContainers.Styles where
 
+import Prelude
+
 import Yoga.React.DOM.Internal (CSS, css)
 
 layoutStyle :: CSS
 layoutStyle = css { display: "flex", gap: "16px", maxWidth: "700px", margin: "0 auto" }
 
-columnStyle :: String -> CSS
-columnStyle bg = css
+columnStyle :: CSS
+columnStyle = css
   { flex: "1"
-  , backgroundColor: bg
+  , backgroundColor: "#1e293b"
   , borderRadius: "12px"
   , display: "flex"
   , flexDirection: "column"
@@ -22,8 +24,8 @@ headerStyle = css
   , padding: "12px 16px"
   }
 
-titleStyle :: String -> CSS
-titleStyle col = css { color: col, fontSize: "14px", fontWeight: "600", margin: "0" }
+titleStyle :: CSS
+titleStyle = css { color: "#ffffff", fontSize: "14px", fontWeight: "600", margin: "0" }
 
 countStyle :: CSS
 countStyle = css
@@ -34,10 +36,10 @@ countStyle = css
   , color: "rgba(255,255,255,0.7)"
   }
 
-scrollAreaStyle :: Boolean -> CSS
-scrollAreaStyle isTarget = css
+scrollAreaStyle :: Boolean -> Int -> CSS
+scrollAreaStyle isTarget height = css
   { overflowY: "auto"
-  , height: "400px"
+  , height: show height <> "px"
   , padding: "0 12px 12px"
   , display: "flex"
   , flexDirection: "column"

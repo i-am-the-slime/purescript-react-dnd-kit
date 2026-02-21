@@ -7,7 +7,7 @@ import YogaStories.Story (story)
 
 default :: JSX
 default = story "default" scrollableContainers
-  { columnColor: color "#1e293b"
-  , itemColor: color "#334155"
-  , headerColor: color "#ffffff"
+  { itemColor: color "#334155"
+  , itemsPerColumn: 20
+  , containerHeight: 400
   }
