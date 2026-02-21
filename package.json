@@ -13,7 +13,7 @@
     "jsdom": "^28.0.0",
     "jsdom-global": "^3.0.2",
     "vitest": "^4.0.18",
-    "yoga-stories": "^0.1.9"
+    "yoga-stories": "file:../purescript-yoga-stories/cli"
   },
   "peerDependencies": {
     "typescript": "^5"
