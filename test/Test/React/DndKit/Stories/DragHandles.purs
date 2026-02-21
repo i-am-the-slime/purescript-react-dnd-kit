@@ -22,6 +22,7 @@ import Yoga.React.DOM.Internal (text)
 type Props =
   { itemCount :: Int
   , lockAxis :: String
+  , reset :: Boolean
   }
 
 dragHandles :: Props -> JSX

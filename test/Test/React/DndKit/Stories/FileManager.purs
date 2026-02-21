@@ -22,6 +22,7 @@ import Yoga.React.DOM.Internal (text)
 type Props =
   { highlightColor :: String
   , indentSize :: Int
+  , reset :: Boolean
   }
 
 type FileNode =

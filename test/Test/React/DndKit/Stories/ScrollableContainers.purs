@@ -23,6 +23,7 @@ type Props =
   { itemsPerColumn :: Int
   , containerHeight :: Int
   , feedback :: String
+  , reset :: Boolean
   }
 
 type Item = { id :: String, label :: String }

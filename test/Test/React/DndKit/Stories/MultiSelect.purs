@@ -23,6 +23,7 @@ import Yoga.React.DOM.Internal (text)
 type Props =
   { itemCount :: Int
   , gridColumns :: Int
+  , reset :: Boolean
   }
 
 type Item = { id :: String, label :: String }
