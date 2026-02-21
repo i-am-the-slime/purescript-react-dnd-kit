@@ -12,7 +12,6 @@ columnStyle bg = css
   , borderRadius: "12px"
   , display: "flex"
   , flexDirection: "column"
-  , overflow: "hidden"
   }
 
 headerStyle :: CSS

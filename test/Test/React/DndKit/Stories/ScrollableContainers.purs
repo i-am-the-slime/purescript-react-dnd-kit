@@ -10,7 +10,7 @@ import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider)
 import React.DndKit.Helpers (moveItems)
 import React.DndKit.Hooks (useDroppable)
-import React.DndKit.Plugins (autoScroller)
+import React.DndKit.Plugins (accessibility, autoScroller, cursor, feedback, preventSelection)
 import React.DndKit.Sortable (SortableId(..), useSortable)
 import React.DndKit.Types (DragDropManager, DragOverEvent, DragType(..), DroppableId(..), callbackRef, clone)
 import Test.React.DndKit.Stories.ScrollableContainers.Styles as Styles
@@ -37,7 +37,7 @@ scrollableContainers = component "ScrollableContainers" \props -> React.do
   let
     onDragOver :: DragOverEvent -> DragDropManager -> Effect Unit
     onDragOver event _ = setColumns \cols -> moveItems cols event
-    plugins = [ autoScroller ]
+    plugins = [ feedback, autoScroller, cursor, accessibility, preventSelection ]
   pure $ div { style: Styles.layoutStyle } do
     dragDropProvider { onDragOver, plugins }
       [ scrollColumn { name: "Left", group: "left", items: columns.left, columnColor: props.columnColor, itemColor: props.itemColor, headerColor: props.headerColor }
