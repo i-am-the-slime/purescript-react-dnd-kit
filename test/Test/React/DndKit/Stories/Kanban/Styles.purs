@@ -52,19 +52,6 @@ cardStyle bg cursor = css
   , cursor
   , userSelect: "none"
   , boxShadow: "0 1px 3px rgba(0,0,0,0.2)"
-  , position: "relative"
-  }
-
-dropIndicatorStyle :: CSS
-dropIndicatorStyle = css
-  { position: "absolute"
-  , top: "-6px"
-  , left: "0"
-  , right: "0"
-  , height: "3px"
-  , backgroundColor: "#3b82f6"
-  , borderRadius: "2px"
-  , pointerEvents: "none"
   }
 
 -- Simple brightening by adding alpha overlay
