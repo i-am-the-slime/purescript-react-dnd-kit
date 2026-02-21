@@ -5,15 +5,17 @@ import Yoga.React.DOM.Internal (CSS, css)
 boardStyle :: CSS
 boardStyle = css { display: "flex", gap: "16px", padding: "16px", maxWidth: "900px", margin: "0 auto" }
 
-columnStyle :: String -> CSS
-columnStyle bg = css
+columnStyle :: String -> Boolean -> CSS
+columnStyle bg isTarget = css
   { flex: "1"
-  , backgroundColor: bg
+  , backgroundColor: if isTarget then brighten bg else bg
   , borderRadius: "12px"
   , padding: "12px"
   , minHeight: "300px"
   , display: "flex"
   , flexDirection: "column"
+  , border: if isTarget then "2px solid rgba(255,255,255,0.3)" else "2px solid transparent"
+  , transition: "background-color 200ms, border-color 200ms"
   }
 
 headerStyle :: CSS
@@ -40,15 +42,18 @@ countStyle = css
 listStyle :: CSS
 listStyle = css { display: "flex", flexDirection: "column", gap: "8px", flex: "1", minHeight: "60px" }
 
-cardStyle :: String -> String -> String -> CSS
-cardStyle bg opacity cursor = css
+cardStyle :: String -> String -> CSS
+cardStyle bg cursor = css
   { padding: "10px 12px"
   , backgroundColor: bg
   , borderRadius: "8px"
   , color: "white"
   , fontSize: "13px"
   , cursor
-  , opacity
   , userSelect: "none"
-  , transition: "opacity 200ms"
+  , boxShadow: "0 1px 3px rgba(0,0,0,0.2)"
+  , position: "relative"
   }
+
+-- Simple brightening by adding alpha overlay
+foreign import brighten :: String -> String

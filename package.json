@@ -24,6 +24,7 @@
     "@dnd-kit/dom": "^0.2.4",
     "@dnd-kit/helpers": "^0.2.4",
     "@dnd-kit/react": "^0.2.4",
+    "motion": "^12.29.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   }

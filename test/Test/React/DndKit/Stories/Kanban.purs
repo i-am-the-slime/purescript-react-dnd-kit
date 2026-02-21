@@ -5,7 +5,11 @@ import Prelude hiding (div)
 import Data.Array (length, mapWithIndex)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import React.Basic (JSX, keyed)
+import Framer.Motion (animatePresence)
+import Framer.Motion.MotionComponent as Motion
+import Framer.Motion.Types (animate, exit, initial, layout, transition) as M
+import React.Basic (JSX, element, elementKeyed, keyed)
+import React.Basic.DOM (css)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider)
 import React.DndKit.Helpers (moveItems)
@@ -13,6 +17,7 @@ import React.DndKit.Sortable (SortableId(..), useSortable)
 import React.DndKit.Hooks (useDroppable)
 import React.DndKit.Types (DragDropManager, DragType(..), DragOverEvent, DroppableId(..), callbackRef, clone)
 import Test.React.DndKit.Stories.Kanban.Styles as Styles
+import Unsafe.Coerce (unsafeCoerce)
 import Yoga.React (component)
 import Yoga.React.DOM.HTML (div, h3, span)
 import Yoga.React.DOM.Internal (text)
@@ -71,16 +76,19 @@ type ColumnProps =
 column :: ColumnProps -> JSX
 column = component "Column" \props -> React.do
   droppable <- useDroppable { id: DroppableId props.group, type: DragType "column", accept: DragType "item", collisionPriority: -1.0 }
+  let cards = props.tasks # mapWithIndex \index task ->
+        keyed task.id $ card { id: task.id, title: task.title, index, group: props.group, cardColor: props.cardColor }
   pure $
-    div { style: Styles.columnStyle props.columnColor }
+    div { style: Styles.columnStyle props.columnColor droppable.isDropTarget }
       [ div { style: Styles.headerStyle }
           [ h3 { style: Styles.titleStyle props.headerColor } (text props.name)
           , span { style: Styles.countStyle } (text (show (length props.tasks)))
           ]
-      , div { ref: callbackRef droppable.ref, style: Styles.listStyle }
-          ( props.tasks # mapWithIndex \index task ->
-              keyed task.id $ card { id: task.id, title: task.title, index, group: props.group, cardColor: props.cardColor }
-          )
+      , element animatePresence
+          { children:
+              [ div { ref: callbackRef droppable.ref, style: Styles.listStyle } cards
+              ]
+          }
       ]
 
 type CardProps =
@@ -94,8 +102,17 @@ type CardProps =
 card :: CardProps -> JSX
 card = component "Card" \props -> React.do
   result <- useSortable { id: SortableId props.id, index: props.index, group: props.group, type: DragType "item", accept: DragType "item", feedback: clone }
-  let opacity = if result.isDragging then "0.5" else "1"
+  let opacity = if result.isDragging then 0.5 else 1.0
   let cursor = if result.isDragging then "grabbing" else "grab"
   pure $
-    div { ref: callbackRef result.ref, style: Styles.cardStyle props.cardColor opacity cursor }
-      (text props.title)
+    elementKeyed Motion.div
+      { key: props.id
+      , layout: M.layout true
+      , initial: M.initial $ css { opacity: 0.0, scale: 0.8 }
+      , animate: M.animate $ css { opacity, scale: 1.0 }
+      , exit: M.exit $ css { opacity: 0.0, scale: 0.8 }
+      , transition: M.transition { duration: 0.2 }
+      , ref: callbackRef result.ref
+      , style: unsafeCoerce (Styles.cardStyle props.cardColor cursor)
+      , children: [ text props.title ]
+      }

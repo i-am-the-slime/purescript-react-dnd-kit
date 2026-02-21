@@ -55,6 +55,7 @@
             "integers",
             "react-basic-dom",
             "react-basic-hooks",
+            "react-motion",
             "react-testing-library",
             "spec",
             "spec-discovery",
@@ -66,7 +67,11 @@
         }
       }
     },
-    "extra_packages": {}
+    "extra_packages": {
+      "react-motion": {
+        "path": "../purescript-framer-motion"
+      }
+    }
   },
   "packages": {
     "aff": {
@@ -497,6 +502,20 @@
         "tailrec",
         "tuples",
         "unfoldable"
+      ]
+    },
+    "heterogeneous": {
+      "type": "registry",
+      "version": "0.7.0",
+      "integrity": "sha256-pQwcFvhWL8noktxaoD7FlLs2F2lYf3QHoyO0VOWO3I0=",
+      "dependencies": [
+        "either",
+        "foldable-traversable",
+        "functors",
+        "prelude",
+        "record",
+        "tuples",
+        "variant"
       ]
     },
     "identity": {
@@ -1048,6 +1067,35 @@
         "web-html"
       ]
     },
+    "react-motion": {
+      "type": "local",
+      "path": "../purescript-framer-motion",
+      "dependencies": [
+        "aff",
+        "aff-promise",
+        "arrays",
+        "effect",
+        "foreign",
+        "foreign-object",
+        "heterogeneous",
+        "literals",
+        "maybe",
+        "nullable",
+        "prelude",
+        "react-basic",
+        "react-basic-dom",
+        "react-basic-hooks",
+        "record",
+        "tuples",
+        "two-or-more",
+        "typelevel-prelude",
+        "unsafe-coerce",
+        "untagged-union",
+        "web-dom",
+        "web-events",
+        "web-uievents"
+      ]
+    },
     "react-testing-library": {
       "type": "registry",
       "version": "4.0.1",
@@ -1260,6 +1308,19 @@
         "control",
         "invariant",
         "prelude"
+      ]
+    },
+    "two-or-more": {
+      "type": "registry",
+      "version": "1.0.0",
+      "integrity": "sha256-N6e7f5JJS9temyVtgvyikVnBHls1le3WoSEc4vHlctY=",
+      "dependencies": [
+        "arrays",
+        "foldable-traversable",
+        "maybe",
+        "partial",
+        "prelude",
+        "tuples"
       ]
     },
     "type-equality": {

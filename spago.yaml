@@ -1,4 +1,7 @@
-workspace: {}
+workspace:
+  extraPackages:
+    react-motion:
+      path: ../purescript-framer-motion
 
 package:
   name: react-dnd-kit
@@ -34,6 +37,7 @@ package:
       - integers
       - react-basic-dom
       - react-basic-hooks
+      - react-motion
       - react-testing-library
       - spec
       - spec-discovery
