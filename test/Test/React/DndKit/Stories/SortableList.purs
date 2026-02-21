@@ -5,7 +5,7 @@ import Prelude hiding (div)
 import Data.Array (mapWithIndex, range)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import React.Basic (JSX)
+import React.Basic (JSX, keyed)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider)
 import React.DndKit.Helpers (moveItems)
@@ -33,7 +33,7 @@ sortableList = component "SortableList" \props -> React.do
     $ div { style: Styles.containerStyle } do
         dragDropProvider { onDragEnd } do
           items # mapWithIndex \index item ->
-            sortableItem
+            keyed item.id $ sortableItem
               { id: item.id
               , label: item.label
               , index
