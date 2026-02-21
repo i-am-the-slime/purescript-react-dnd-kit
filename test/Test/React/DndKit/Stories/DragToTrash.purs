@@ -7,10 +7,11 @@ import Data.Maybe (Maybe(..), isJust)
 import Data.Newtype (un)
 import Data.Tuple.Nested ((/\))
 import Effect (Effect)
-import React.Basic (JSX)
+import React.Basic (JSX, keyed)
 import React.Basic.Hooks as React
 import React.DndKit (dragDropProvider)
 import React.DndKit.Hooks (useDragOperation, useDraggable, useDroppable)
+import React.DndKit.Plugins (configureFeedback, noDropAnimation)
 import React.DndKit.Types (DragEndEvent, DragDropManager, DraggableId(..), DroppableId(..), callbackRef)
 import Test.React.DndKit.Stories.DragToTrash.Styles as Styles
 import Yoga.React (component)
@@ -34,11 +35,12 @@ dragToTrash = component "DragToTrash" \props -> React.do
           Just s -> setItems (filter \item -> item.id /= un DraggableId s.id)
           Nothing -> pure unit
       _ -> pure unit
+    plugins = [ configureFeedback { dropAnimation: noDropAnimation } ]
   pure $ div { style: Styles.containerStyle } do
-    dragDropProvider { onDragEnd }
+    dragDropProvider { onDragEnd, plugins }
       [ div { style: Styles.gridStyle }
           ( items <#> \item ->
-              draggableCard { id: item.id, label: item.label, cardColor: props.cardColor }
+              keyed item.id $ draggableCard { id: item.id, label: item.label, cardColor: props.cardColor }
           )
       , trashZone { trashColor: props.trashColor }
       ]
