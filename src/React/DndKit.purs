@@ -15,6 +15,7 @@ import Foreign (Foreign)
 import Prim.Row as Row
 import React.Basic (JSX, ReactComponent)
 import React.DndKit.Internal (wrapHandlers_)
+import React.DndKit.Plugins (DropAnimation)
 import React.DndKit.Types (CollisionEvent, DragDropManager, DragEndEvent, DragMoveEvent, DragOverEvent, DragStartEvent, Modifier, Plugin, Sensor)
 import Yoga.React.DOM.Internal (class IsJSX)
 
@@ -53,6 +54,7 @@ type DragOverlayProps =
   , style :: Foreign
   , tag :: String
   , disabled :: Boolean
+  , dropAnimation :: DropAnimation
   )
 
 foreign import dragOverlayImpl :: forall props. ReactComponent { | props }
