@@ -7,6 +7,8 @@ module React.DndKit.Manager
   , getDragPosition
   ) where
 
+import Prelude
+
 import Data.Nullable (Nullable)
 import Effect (Effect)
 import React.DndKit.Types (Coordinates, DragDropManager)
