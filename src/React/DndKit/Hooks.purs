@@ -12,17 +12,22 @@ module React.DndKit.Hooks
   , UseDragDropMonitorConfig
   , useDragOperation
   , UseDragOperation
+  , useDragDropManager
+  , useStableCallbackRef
   ) where
 
 import Prelude
 
+import Data.Nullable (Nullable)
 import Effect (Effect)
-import Effect.Uncurried (EffectFn1, runEffectFn1)
+import Effect.Uncurried (EffectFn1, EffectFn2, runEffectFn1, runEffectFn2)
 import Foreign (Foreign)
 import Prim.Row as Row
+import React.Basic.Hooks (Ref)
 import React.Basic.Hooks.Internal (Hook, unsafeHook)
 import React.DndKit.Internal (wrapHandlers_, convertOperationSnapshot_)
 import React.DndKit.Types (CallbackRef, CollisionDetector, CollisionEvent, DragDropManager, DragEndEvent, DragMoveEvent, DragOperationSnapshot, DragOverEvent, DragStartEvent, DragType, DraggableId, DraggableInstance, DroppableId, DroppableInstance, FeedbackType, Modifier, Sensor)
+import Web.DOM (Element)
 
 -- useDraggable
 
@@ -117,3 +122,17 @@ foreign import useDragOperationImpl :: Effect Foreign
 
 useDragOperation :: Hook UseDragOperation DragOperationSnapshot
 useDragOperation = unsafeHook (convertOperationSnapshot_ <$> useDragOperationImpl)
+
+-- useDragDropManager
+
+foreign import useDragDropManagerImpl :: Effect DragDropManager
+
+useDragDropManager :: Hook UseDragOperation DragDropManager
+useDragDropManager = unsafeHook useDragDropManagerImpl
+
+-- useStableCallbackRef
+
+foreign import useStableCallbackRefImpl :: EffectFn2 CallbackRef (Ref (Nullable Element)) CallbackRef
+
+useStableCallbackRef :: CallbackRef -> Ref (Nullable Element) -> Hook UseDragOperation CallbackRef
+useStableCallbackRef dndRef elRef = unsafeHook (runEffectFn2 useStableCallbackRefImpl dndRef elRef)
